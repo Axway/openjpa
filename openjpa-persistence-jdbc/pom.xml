@@ -724,7 +724,7 @@
                 </repository>
             </repositories>
         </profile>
-        
+
         <!-- Profile for testing with Oracle DB -->
         <profile>
             <!--
