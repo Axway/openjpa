@@ -1,3 +1,8 @@
+// Copyright (c) 2011 Axway Inc. All Rights Reserved.
+// Please refer to the file "LICENSE" for further important copyright
+// and licensing information.  Please also refer to the documentation
+// for additional copyright notices.
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,14 +23,6 @@
  */
 package org.apache.openjpa.util;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.Date;
-
 import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -42,18 +39,25 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueStrategies;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.Date;
+
 /**
  * Utility class for manipulating application object ids.
  *
  * @author Abe White
  * @nojavadoc
  */
-public class ApplicationIds {
+public class ApplicationIds
+{
 
-    private static final Localizer _loc = Localizer.forPackage
-        (ApplicationIds.class);
-    private static final Localizer _loc2 = Localizer.forPackage
-        (StateManagerImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(ApplicationIds.class);
+    private static final Localizer _loc2 = Localizer.forPackage(StateManagerImpl.class);
 
     /**
      * Return the primary key values for the given object id. The values
@@ -90,8 +94,7 @@ public class ApplicationIds {
             PrimaryKeyFieldManager consumer = new PrimaryKeyFieldManager();
             consumer.setStore(pks);
             oid = wrap(meta, oid);
-            PCRegistry.copyKeyFieldsFromObjectId(meta.getDescribedType(),
-                consumer, oid);
+            PCRegistry.copyKeyFieldsFromObjectId(meta.getDescribedType(), consumer, oid);
             return consumer.getStore();
         }
 
@@ -101,11 +104,9 @@ public class ApplicationIds {
         Class oidType = oid.getClass();
         for (int i = 0; i < fmds.length; i++) {
             if (AccessCode.isField(meta.getAccessType()))
-                pks[i] = Reflection.get(oid, Reflection.findField(oidType, 
-                    fmds[i].getName(), true));
+                pks[i] = Reflection.get(oid, Reflection.findField(oidType, fmds[i].getName(), true));
             else
-                pks[i] = Reflection.get(oid, Reflection.findGetter(oidType,
-                    fmds[i].getName(), true));
+                pks[i] = Reflection.get(oid, Reflection.findGetter(oidType, fmds[i].getName(), true));
         }
         return pks;
     }
@@ -195,19 +196,19 @@ public class ApplicationIds {
                     if (!convert && !(val instanceof BigDecimal))
                         throw new ClassCastException(
                             "!(x instanceof BigDecimal)");
-                    return new BigDecimalId(meta.getDescribedType(), 
+                    return new BigDecimalId(meta.getDescribedType(),
                         (BigDecimal)val);
                 case JavaTypes.BIGINTEGER:
                     if (!convert && !(val instanceof BigInteger))
                         throw new ClassCastException(
                             "!(x instanceof BigInteger)");
-                    return new BigIntegerId(meta.getDescribedType(), 
+                    return new BigIntegerId(meta.getDescribedType(),
                         (BigInteger)val);
                 case JavaTypes.BOOLEAN:
                 case JavaTypes.BOOLEAN_OBJ:
                     if (!convert && !(val instanceof Boolean))
                         throw new ClassCastException("!(x instanceof Boolean)");
-                    return new BooleanId(meta.getDescribedType(), 
+                    return new BooleanId(meta.getDescribedType(),
                         val == null ? false : (Boolean)val);
                 default:
                     throw new InternalException();
@@ -221,8 +222,7 @@ public class ApplicationIds {
             producer.setStore(pks);
             if (convert)
                 producer.setMetaData(meta);
-            PCRegistry.copyKeyFieldsToObjectId(meta.getDescribedType(),
-                producer, oid);
+            PCRegistry.copyKeyFieldsToObjectId(meta.getDescribedType(), producer, oid);
             return ApplicationIds.wrap(meta, oid);
         }
 
@@ -232,8 +232,7 @@ public class ApplicationIds {
             throw new UserException(_loc.get("objectid-abstract", meta));
         Object copy = null;
         try {
-            copy = AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(oidType));
+            copy = AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(oidType));
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
                 t = ((PrivilegedActionException) t).getException();
@@ -243,14 +242,12 @@ public class ApplicationIds {
         FieldMetaData[] fmds = meta.getPrimaryKeyFields();
         Object val;
         for (int i = 0; i < fmds.length; i++) {
-            val = (convert) ? JavaTypes.convert(pks[i],
-                fmds[i].getObjectIdFieldTypeCode()) : pks[i];
+            val = (convert) ? JavaTypes.convert(pks[i], fmds[i].getObjectIdFieldTypeCode()) : pks[i];
             if (AccessCode.isField(meta.getAccessType()))
-                Reflection.set(copy, Reflection.findField(oidType, 
-                    fmds[i].getName(), true), val); 
+                Reflection.set(copy, Reflection.findField(oidType, fmds[i].getName(), true), val);
             else
-                Reflection.set(copy, Reflection.findSetter(oidType, 
-                    fmds[i].getName(), fmds[i].getDeclaredType(), true), val);
+                Reflection.set(copy, Reflection.findSetter(oidType, fmds[i].getName(), fmds[i].getDeclaredType(), true),
+							   val);
         }
 
         if (meta.isObjectIdTypeShared())
@@ -309,7 +306,7 @@ public class ApplicationIds {
                         inner = copy(inner, embed, embed.getFields());
                     return new ObjectId(cls, inner, koid.hasSubclasses());
                 case JavaTypes.OBJECT:
-                    return new ObjectId(cls, koid.getIdObject(), 
+                    return new ObjectId(cls, koid.getIdObject(),
                         koid.hasSubclasses());
                 case JavaTypes.DATE:
                     return new DateId(cls, ((DateId) oid).getId(),
@@ -331,8 +328,7 @@ public class ApplicationIds {
         if (!Modifier.isAbstract(meta.getDescribedType().getModifiers())
             && !hasPCPrimaryKeyFields(meta)) {
             Class type = meta.getDescribedType();
-            PersistenceCapable pc = PCRegistry.newInstance(type, null, oid, 
-                 false);
+            PersistenceCapable pc = PCRegistry.newInstance(type, null, oid, false);
             Object copy = pc.pcNewObjectIdInstance();
             pc.pcCopyKeyFieldsToObjectId(copy);
             return copy;
@@ -370,8 +366,7 @@ public class ApplicationIds {
         Class oidType = oid.getClass();
         Object copy = null;
         try {
-            copy = AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(oidType));
+            copy = AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(oidType));
         } catch (Throwable t) {
             if (t instanceof PrivilegedActionException)
                 t = ((PrivilegedActionException) t).getException();
@@ -385,14 +380,12 @@ public class ApplicationIds {
                 continue;
 
             if (AccessCode.isField(meta.getAccessType())) {
-                    field = Reflection.findField(oidType, fmds[i].getName(),
-                        true);
+                    field = Reflection.findField(oidType, fmds[i].getName(), true);
                     Reflection.set(copy, field, Reflection.get(oid, field));
                 } else { // property
-                    val = Reflection.get(oid, Reflection.findGetter(oidType,
-                        fmds[i].getName(), true));
+                    val = Reflection.get(oid, Reflection.findGetter(oidType, fmds[i].getName(), true));
                     Reflection.set(copy, Reflection.findSetter(oidType, fmds[i].
-                        getName(), fmds[i].getObjectIdFieldType(), true), val);
+						getName(), fmds[i].getObjectIdFieldType(), true), val);
                 }
             }
             return copy;
@@ -410,10 +403,8 @@ public class ApplicationIds {
         ClassMetaData meta = fmd.getDefiningMetaData();
         Class oidType = oid.getClass();
         if (AccessCode.isField(meta.getAccessType()))
-            return Reflection.get(oid, Reflection.findField(oidType, 
-                fmd.getName(), true));
-        return Reflection.get(oid, Reflection.findGetter(oidType, fmd.getName(),
-            true));
+            return Reflection.get(oid, Reflection.findField(oidType, fmd.getName(), true));
+        return Reflection.get(oid, Reflection.findGetter(oidType, fmd.getName(), true));
     }
 
     /**
@@ -428,6 +419,30 @@ public class ApplicationIds {
         if (oid == null)
             return null;
 
+		// Axway fix! -- Todo report this problem!!!!
+		// BrokerImpl.isDetached(Object obj) calls this method and tests to see if a
+		// OID is returned and if so it tries to find the object associated with the
+		// OID.  The problem with that is if in the object graph of objects being persisted
+		// in the transaction, there can be many objects without an OID "value" assigned yet.
+		// Since we use numeric primary keys, this method was always returning a OpenJPA LongId
+		// with a value of 0L.  It then tries to find the object as I said before, but it would
+		// potentially find the wrong one or not at all.  It then would possibly return true from the
+		// isDetached method call even though the object is not detached, but part of the transaction
+		// and should be made persistent based on the cascade type in the object graph.
+		//
+		// This IF block solves the problem by returning null if the ObjectID underlying value is
+		// null or zero (if numeric).  By doing this, BrokerImpl.isDetached(Object obj) will not consider
+		// the object detached as it should.
+		if (oid instanceof OpenJPAId)
+		{
+			OpenJPAId openJPAId = (OpenJPAId)oid;
+			Object idObject = openJPAId.getIdObject();
+			if (idObject == null)
+				return null;
+			if (idObject instanceof Number && ((Number)idObject).longValue() == 0L)
+				return null;
+		}
+		
         if (!meta.isOpenJPAIdentity()) {
             pc.pcCopyKeyFieldsToObjectId(oid);
             return oid;
@@ -486,7 +501,7 @@ public class ApplicationIds {
                 // If a value already exists on this field, throw exception.
                 // This is considered an application coding error.
                 if (!sm.isDefaultValue(pks[i].getIndex()))
-                    throw new InvalidStateException(_loc2.get("existing-value-override-excep", 
+                    throw new InvalidStateException(_loc2.get("existing-value-override-excep",
                             pks[i].getFullName(false), Exceptions.toString(sm.getPersistenceCapable()),
                             sm.getPCState().getClass().getSimpleName()));
                 // Assign the generated value
@@ -501,7 +516,7 @@ public class ApplicationIds {
     /**
      * Check if object id is set or not. 
      */
-    public static boolean isIdSet(Object id, ClassMetaData meta, 
+    public static boolean isIdSet(Object id, ClassMetaData meta,
         String mappedByIdFieldName) {
         Object key = null;
         if (meta.isOpenJPAIdentity())
@@ -513,8 +528,7 @@ public class ApplicationIds {
             if (((ObjectId)id).getId() == null)
                 return false;        	
             Class idClass = ((ObjectId)id).getId().getClass();
-            val = Reflection.get(key, 
-                    Reflection.findField(idClass, mappedByIdFieldName, true)); 
+            val = Reflection.get(key, Reflection.findField(idClass, mappedByIdFieldName, true));
         } else
             val = key;
         
@@ -563,7 +577,7 @@ public class ApplicationIds {
                 case JavaTypes.OBJECT:
                     return ((ObjectId)id).getId();
                 case JavaTypes.BIGDECIMAL:
-                    return ((BigDecimalId)id).getId(); 
+                    return ((BigDecimalId)id).getId();
                 case JavaTypes.BIGINTEGER:
                     return ((BigIntegerId)id).getId();
                 default:
@@ -579,7 +593,8 @@ public class ApplicationIds {
      * Helper class used to transfer pk values to/from application oids.
      */
     private static class PrimaryKeyFieldManager
-        implements FieldManager {
+        implements FieldManager
+	{
 
         private Object[] _store = null;
         private int _index = 0;
@@ -689,7 +704,7 @@ public class ApplicationIds {
                     val = JavaTypes.convert(val, fmd.getDeclaredTypeCode());
                 else
                     val = JavaTypes.convert(val, JavaTypes.getTypeCode(fmd.
-                        getObjectIdFieldType()));
+						getObjectIdFieldType()));
             }
             return val;
 		}

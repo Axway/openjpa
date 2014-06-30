@@ -18,29 +18,6 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
-
-import javax.persistence.SharedCacheMode;
-import javax.persistence.ValidationMode;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.PersistenceUnitTransactionType;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -64,6 +41,27 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import javax.persistence.SharedCacheMode;
+import javax.persistence.ValidationMode;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.PersistenceUnitTransactionType;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Set;
 
 /**
  * Sets JPA specification defaults and parses JPA specification XML files.
@@ -82,7 +80,8 @@ import org.xml.sax.SAXException;
  */
 public class PersistenceProductDerivation 
     extends AbstractProductDerivation
-    implements OpenJPAProductDerivation {
+    implements OpenJPAProductDerivation
+{
 
     public static final Specification SPEC_JPA = new Specification("jpa 2");
     public static final Specification ALIAS_EJB = new Specification("ejb 3");
@@ -90,13 +89,12 @@ public class PersistenceProductDerivation
     public static final String RSRC_DEFAULT = "META-INF/persistence.xml";
     public static final BigDecimal VERSION_1_0 = BigDecimal.valueOf(1.0);
 
-    private static final Localizer _loc = Localizer.forPackage
-        (PersistenceProductDerivation.class);
+    private static final Localizer _loc = Localizer.forPackage(PersistenceProductDerivation.class);
 
     private HashMap<String, PUNameCollision> _puNameCollisions
         = new HashMap<String,PUNameCollision>();
     
-    public static final String PREFIX = "javax.persistence"; 
+    public static final String PREFIX = "javax.persistence";
     
     // These are properties that are invalid to be configured at the provider level. 
     private static final String[] _invalidPersistenceProperties =
@@ -172,10 +170,10 @@ public class PersistenceProductDerivation
 
     @Override
     public void validate()
-        throws Exception {
+        throws Exception
+	{
         // make sure JPA is available
-        AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
-            javax.persistence.EntityManagerFactory.class));
+        AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(javax.persistence.EntityManagerFactory.class));
     }
     
     @Override
@@ -231,7 +229,7 @@ public class PersistenceProductDerivation
      */
     private void configureBeanValidation(OpenJPAConfigurationImpl conf) {
         // Validation defines/adds the following plugins to OpenJPA Configuration
-        conf.validationFactory         = conf.addObject(JPAProperties.VALIDATE_FACTORY); 
+        conf.validationFactory         = conf.addObject(JPAProperties.VALIDATE_FACTORY);
         conf.validator                 = conf.addObject("Validator");
         conf.validationMode            = conf.addString(JPAProperties.VALIDATE_MODE);
         conf.validationGroupPrePersist = conf.addString(JPAProperties.VALIDATE_PRE_PERSIST);
@@ -306,7 +304,8 @@ public class PersistenceProductDerivation
      * user properties.
      */
     public ConfigurationProvider load(PersistenceUnitInfo pinfo, Map m)
-        throws IOException {
+        throws IOException
+	{
         if (pinfo == null)
             return null;
         if (!isOpenJPAPersistenceProvider(pinfo, null)) {
@@ -330,7 +329,8 @@ public class PersistenceProductDerivation
      * be null.
      */
     public ConfigurationProvider load(String rsrc, String name, Map m)
-        throws IOException {
+        throws IOException
+	{
         boolean explicit = !StringUtils.isEmpty(rsrc);
         if (!explicit)
             rsrc = RSRC_DEFAULT;
@@ -354,9 +354,10 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public ConfigurationProvider load(String rsrc, String anchor, 
+    public ConfigurationProvider load(String rsrc, String anchor,
         ClassLoader loader)
-        throws IOException {
+        throws IOException
+	{
         if (rsrc != null && !rsrc.endsWith(".xml"))
             return null;
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
@@ -366,14 +367,15 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public ConfigurationProvider load(File file, String anchor) 
-        throws IOException {
+    public ConfigurationProvider load(File file, String anchor)
+        throws IOException
+	{
         if (!file.getName().endsWith(".xml"))
             return null;
 
         ConfigurationParser parser = new ConfigurationParser(null);
         parser.parse(file);
-        return load(findUnit((List<PersistenceUnitInfoImpl>) 
+        return load(findUnit((List<PersistenceUnitInfoImpl>)
             parser.getResults(), anchor, null), null);
     }
 
@@ -383,7 +385,8 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public List getAnchorsInFile(File file) throws IOException {
+    public List getAnchorsInFile(File file) throws IOException
+	{
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
             parser.parse(file);
@@ -411,12 +414,12 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public List getAnchorsInResource(String resource) throws Exception {
+    public List getAnchorsInResource(String resource) throws Exception
+	{
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
         	List results = new ArrayList();
-            ClassLoader loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
             List<URL> urls = getResourceURLs(resource, loader);
             if (urls != null) {
                 for (URL url : urls) {
@@ -433,12 +436,12 @@ public class PersistenceProductDerivation
 
     @Override
     public ConfigurationProvider loadGlobals(ClassLoader loader)
-        throws IOException {
+        throws IOException
+	{
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         String rsrc = null;
         for (int i = 0; i < prefixes.length && StringUtils.isEmpty(rsrc); i++)
-           rsrc = AccessController.doPrivileged(J2DoPrivHelper
-                .getPropertyAction(prefixes[i] + ".properties")); 
+           rsrc = AccessController.doPrivileged(J2DoPrivHelper.getPropertyAction(prefixes[i] + ".properties"));
         boolean explicit = !StringUtils.isEmpty(rsrc);
         String anchor = null;
         int idx = (!explicit) ? -1 : rsrc.lastIndexOf('#');
@@ -461,7 +464,8 @@ public class PersistenceProductDerivation
 
     @Override
     public ConfigurationProvider loadDefaults(ClassLoader loader)
-        throws IOException {
+        throws IOException
+	{
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
         if (load(cp, RSRC_DEFAULT, null, null, loader, false) == Boolean.TRUE)
             return cp;
@@ -484,10 +488,11 @@ public class PersistenceProductDerivation
      }
 
     private static List<URL> getResourceURLs(String rsrc, ClassLoader loader)
-        throws IOException {
+        throws IOException
+	{
         Enumeration<URL> urls = null;
         try {
-            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
+            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc));
             if (!urls.hasMoreElements()) {
                 if (!rsrc.startsWith("META-INF"))
                   urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, "META-INF/" + rsrc));
@@ -511,9 +516,10 @@ public class PersistenceProductDerivation
      * @return {@link Boolean#TRUE} if the resource was loaded, null if it
      * does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
      */
-    private Boolean load(ConfigurationProviderImpl cp, String rsrc, 
+    private Boolean load(ConfigurationProviderImpl cp, String rsrc,
         String name, Map m, ClassLoader loader, boolean explicit)
-        throws IOException {
+        throws IOException
+	{
         if (loader == null)
             loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
 
@@ -526,14 +532,14 @@ public class PersistenceProductDerivation
         if (pinfo == null) {
             if (!explicit)
                 return Boolean.FALSE;
-            throw new MissingResourceException(_loc.get("missing-xml-config", 
+            throw new MissingResourceException(_loc.get("missing-xml-config",
                 rsrc, String.valueOf(name)).getMessage(), getClass().getName(), rsrc);
         } else if (!isOpenJPAPersistenceProvider(pinfo, loader)) {
             if (!explicit) {
                 warnUnknownProvider(pinfo);
                 return Boolean.FALSE;
             }
-            throw new MissingResourceException(_loc.get("unknown-provider", 
+            throw new MissingResourceException(_loc.get("unknown-provider",
                 rsrc, name, pinfo.getPersistenceProviderClassName()).
                 getMessage(), getClass().getName(), rsrc);
         }
@@ -553,7 +559,8 @@ public class PersistenceProductDerivation
      */
     private PersistenceUnitInfoImpl parseResources(ConfigurationParser parser,
         List<URL> urls, String name, ClassLoader loader)
-        throws IOException {
+        throws IOException
+	{
         List<PersistenceUnitInfoImpl> pinfos = new ArrayList<PersistenceUnitInfoImpl>();
         for (URL url : urls) {
             parser.parse(url);
@@ -566,7 +573,7 @@ public class PersistenceProductDerivation
      * Find the unit with the given name, or an OpenJPA unit if no name is
      * given (preferring an unnamed OpenJPA unit to a named one).
      */
-    private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl> 
+    private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl>
         pinfos, String name, ClassLoader loader) {
         PersistenceUnitInfoImpl ojpa = null;
         PersistenceUnitInfoImpl result = null;
@@ -651,7 +658,8 @@ public class PersistenceProductDerivation
      * Custom configuration provider.   
      */
     public static class ConfigurationProviderImpl
-        extends MapConfigurationProvider {
+        extends MapConfigurationProvider
+	{
 
         private String _source;
 
@@ -692,7 +700,7 @@ public class PersistenceProductDerivation
                     String key = ProductDerivations.getConfigurationKey("MetaDataFactory", getProperties());
                     Object override = getProperties().get(key);
                     if (override instanceof String)
-                        addProperty(key, Configurations.combinePlugins(orig, (String) override));
+                        addProperty(key, Configurations.combinePlugins(orig, (String)override));
                 }
             }
             super.setInto(conf, null);
@@ -705,9 +713,9 @@ public class PersistenceProductDerivation
                 String dc = oconf.getDataCache();
                 String rcp = oconf.getRemoteCommitProvider();
                 // If the datacache is set and is something other than false
-                if (dc != null && dc.equals("false") == false) {
+                if (dc != null && !dc.equals("false")) {
                     // If RCP is null or empty, set it to sjvm.
-                    if (rcp == null || (rcp != null && rcp.equals("") == false)) {
+                    if (rcp == null || rcp.equals("")) {
                         oconf.setRemoteCommitProvider("sjvm");
                     }
                 }
@@ -735,13 +743,13 @@ public class PersistenceProductDerivation
      * Package-protected for testing.
      */
     public static class ConfigurationParser
-        extends XMLMetaDataParser {
+        extends XMLMetaDataParser
+	{
 
         private static final String PERSISTENCE_XSD_1_0 = "persistence_1_0.xsd";
         private static final String PERSISTENCE_XSD_2_0 = "persistence_2_0.xsd";
 
-        private static final Localizer _loc = Localizer.forPackage
-            (ConfigurationParser.class);
+        private static final Localizer _loc = Localizer.forPackage(ConfigurationParser.class);
 
         private final Map _map;
         private PersistenceUnitInfoImpl _info = null;
@@ -759,7 +767,8 @@ public class PersistenceProductDerivation
 
         @Override
         public void parse(URL url)
-            throws IOException {
+            throws IOException
+		{
             _source = url;
 
             // peek at the doc to determine the version
@@ -777,10 +786,10 @@ public class PersistenceProductDerivation
 
         @Override
         public void parse(File file)
-            throws IOException {
+            throws IOException
+		{
             try {
-                _source = AccessController.doPrivileged(J2DoPrivHelper
-                    .toURLAction(file));
+                _source = AccessController.doPrivileged(J2DoPrivHelper.toURLAction(file));
             } catch (PrivilegedActionException pae) {
                 throw (MalformedURLException) pae.getException();
             }
@@ -807,7 +816,7 @@ public class PersistenceProductDerivation
             String persistencexsd = "persistence-xsd.rsrc";
             // if the version and/or schema location is for 1.0, use the 1.0 
             // schema
-            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0) 
+            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0)
             || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
                 persistencexsd = "persistence_2_0-xsd.rsrc";
             }
@@ -823,7 +832,8 @@ public class PersistenceProductDerivation
         }
 
         protected boolean startElement(String name, Attributes attrs)
-            throws SAXException {
+            throws SAXException
+		{
             if (currentDepth() == 1)
                 startPersistenceUnit(attrs);
             else if (currentDepth() == 3 && "property".equals(name))
@@ -832,7 +842,8 @@ public class PersistenceProductDerivation
         }
 
         protected void endElement(String name)
-            throws SAXException {
+            throws SAXException
+		{
             if (currentDepth() == 1) {
                 endPersistenceUnit();
                 _info.fromUserProperties(_map);
@@ -903,7 +914,8 @@ public class PersistenceProductDerivation
          * Parse persistence-unit element.
          */
         private void startPersistenceUnit(Attributes attrs)
-            throws SAXException {
+            throws SAXException
+		{
             _excludeUnlistedSet = false;            
             _info = new PersistenceUnitInfoImpl();
             _info.setPersistenceUnitName(attrs.getValue("name"));
@@ -965,7 +977,7 @@ public class PersistenceProductDerivation
         
         void logCollision(Log logger){
             if(logger.isWarnEnabled()){
-                logger.warn(_loc.getFatal("dup-pu", new Object[]{_puName,_resources.toString(),	
+                logger.warn(_loc.getFatal("dup-pu", new Object[]{_puName,_resources.toString(),
                     _resources.iterator().next()}));
             }
         }

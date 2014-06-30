@@ -18,11 +18,6 @@
  */
 package org.apache.openjpa.datacache;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCDataGenerator;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -31,6 +26,12 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ImplHelper;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default data cache manager provides handle to utilities {@linkplain PCDataGenerator}, {@linkplain ClearableScheduler}
@@ -42,7 +43,8 @@ import org.apache.openjpa.util.ImplHelper;
  * @author Pinaki Poddar
  */
 public class DataCacheManagerImpl
-    implements Closeable, DataCacheManager {
+    implements Closeable, DataCacheManager
+{
 
     private OpenJPAConfiguration _conf;
     private DataCache _cache = null;
@@ -50,7 +52,8 @@ public class DataCacheManagerImpl
     private DataCachePCDataGenerator _pcGenerator = null;
     private ClearableScheduler _scheduler = null;
     private CacheDistributionPolicy _policy = new DefaultCacheDistributionPolicy();
-    private Map<ClassMetaData,Boolean> _cacheable = new HashMap<ClassMetaData, Boolean>();
+	// AXWAY CODE to change the initialization from HashMap to ConcurrentHashMap - check OPENJPA-2470 ticket
+    private Map<ClassMetaData,Boolean> _cacheable = null;
     
     // Properties that are configured via openjpa.DataCache but need to be used here. This is here to support the 1.2
     // way of doing things with openjpa.DataCache(Types=x;y;z,ExcludedTypes=a)
@@ -58,7 +61,9 @@ public class DataCacheManagerImpl
     private Set<String> _excludedTypes;
     
     public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
-        _conf = conf;        
+        _conf = conf;
+		//AXWAY CODE to initialize the _cachable Map to a ConcurrentHashMap - check OPENJPA-2470 ticket
+		_cacheable = new ConcurrentHashMap<ClassMetaData, Boolean>();
         _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
         if (_queryCache != null)
             _queryCache.initialize(this);
@@ -166,7 +171,7 @@ public class DataCacheManagerImpl
      *  
      * @return TRUE or FALSE if  cache mode is configured. null otherwise.
      */
-    private Boolean isCacheableByMode(ClassMetaData meta) { 
+	private Boolean isCacheableByMode(ClassMetaData meta) {
         String mode = _conf.getDataCacheMode();
         if (DataCacheMode.ALL.toString().equalsIgnoreCase(mode))
             return true;
@@ -184,7 +189,7 @@ public class DataCacheManagerImpl
      *  
      * @see ClassMetaData#getDataCacheName()
      */
-    private Boolean isCacheableByType(ClassMetaData meta) { 
+    private Boolean isCacheableByType(ClassMetaData meta) {
         if (_includedTypes != null && _includedTypes.size() > 0) {
             return _includedTypes.contains(meta.getDescribedType().getName());
         }

@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>2.1.1</version>
+        <version>2.1.1-CUSTOMIZED</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -42,6 +42,11 @@
             <artifactId>openjpa-lib</artifactId>
             <version>${project.version}</version>
         </dependency>
+		<dependency>
+			<groupId>asm</groupId>
+			<artifactId>asm-all</artifactId>
+			<version>3.2</version>
+		</dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
@@ -58,7 +63,9 @@
             <groupId>com.ibm.websphere</groupId>
             <artifactId>websphere_uow_api</artifactId>
             <version>0.0.1</version>
-            <scope>provided</scope>
+			<scope>system</scope>
+			<systemPath>${basedir}/internal-repository/com/ibm/websphere/websphere_uow_api/0.0.1/websphere_uow_api-0.0.1.jar</systemPath>
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>

@@ -18,6 +18,30 @@
  */
 package org.apache.openjpa.meta;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.DynamicPersistenceCapable;
+import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.event.LifecycleEventManager;
+import org.apache.openjpa.lib.conf.Configurable;
+import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
+import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringDistance;
+import org.apache.openjpa.util.ClassResolver;
+import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.OpenJPAId;
+import serp.util.Strings;
+
 import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -34,31 +58,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.DynamicPersistenceCapable;
-import org.apache.openjpa.enhance.PCEnhancer;
-import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
-import org.apache.openjpa.event.LifecycleEventManager;
-import org.apache.openjpa.lib.conf.Configurable;
-import org.apache.openjpa.lib.conf.Configuration;
-import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.MultiClassLoader;
-import org.apache.openjpa.lib.util.Options;
-import org.apache.openjpa.lib.util.StringDistance;
-import org.apache.openjpa.util.ClassResolver;
-import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.util.InternalException;
-import org.apache.openjpa.util.MetaDataException;
-import org.apache.openjpa.util.OpenJPAId;
-
-import serp.util.Strings;
-
 /**
  * Repository of and factory for persistent metadata.
  * 
@@ -67,8 +66,9 @@ import serp.util.Strings;
  * @author Steve Kim (query metadata)
  */
 @SuppressWarnings("serial")
-public class MetaDataRepository implements PCRegistry.RegisterClassListener, Configurable, Closeable, MetaDataModes,
-    Serializable {
+public class MetaDataRepository
+	implements PCRegistry.RegisterClassListener, Configurable, Closeable, MetaDataModes, Serializable
+{
 
     /**
      * Constant to not validate any metadata.
@@ -315,8 +315,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
         MultiClassLoader multi = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
-        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
-            .getClassLoaderAction(MetaDataRepository.class)));
+        multi.addClassLoader(
+			AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(MetaDataRepository.class)));
         // If a ClassLoader was passed into Persistence.createContainerEntityManagerFactory on the PersistenceUnitInfo
         // we need to add that loader to the chain of classloaders
         ClassResolver resolver = _conf.getClassResolverInstance();
@@ -340,8 +340,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             try {
                 Class<?> cls = AccessController.doPrivileged((J2DoPrivHelper.getForNameAction(c, true, multi)));
                 loaded.add(cls);
-                // This call may be unnecessary?
-                _factory.load(cls, MODE_ALL, multi);
+				// Todo - report to JPA.  It doesn't seem like annotations can be used if pre-load is
+				// set to true.  I added this if condition for _factory.load.  Notice JPA's comment
+				// that this might not be necessary.  Bob K.
+				ClassMetaData cmd = getCachedMetaData(cls);
+            	if (cmd != null) {
+					// This call may be unnecessary?
+					_factory.load(cls, MODE_ALL, multi);
+				}
             } catch (PrivilegedActionException pae) {
                 throw new MetaDataException(_loc.get("repos-initializeEager-error"), pae);
             }
@@ -560,8 +566,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             // class never registers itself with the system
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 try {
-                    Class.forName(cls.getName(), true, AccessController.doPrivileged(J2DoPrivHelper
-                        .getClassLoaderAction(cls)));
+                    Class.forName(cls.getName(), true,
+								  AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(cls)));
                 } catch (Throwable t) {
                 }
             }
@@ -1510,7 +1516,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private Collection<Class<?>> loadPersistentTypesInternal(boolean devpath, ClassLoader envLoader, 
+    private Collection<Class<?>> loadPersistentTypesInternal(boolean devpath, ClassLoader envLoader,
         boolean mustExist) {
             Set<String> names = getPersistentTypeNames(devpath, envLoader);
             if (names == null || names.isEmpty()) {
@@ -1923,7 +1929,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader, 
+    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader,
         boolean mustExist) {
             QueryMetaData meta = getQueryMetaDataInternal(cls, name, envLoader);
             if (meta == null) {
@@ -2082,7 +2088,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public QueryMetaData searchQueryMetaDataByName(String name) {
         for (Object key : _queries.keySet()) {
             if (key instanceof QueryKey)
-                if (StringUtils.equals(((QueryKey) key).name, name))
+                if (StringUtils.equals(((QueryKey)key).name, name))
                     return (QueryMetaData) _queries.get(key);
         }
         return null;
@@ -2344,7 +2350,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Query key struct.
      */
-    private static class QueryKey implements Serializable {
+    private static class QueryKey implements Serializable
+	{
 
         public String clsName;
         public String name;

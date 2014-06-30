@@ -56,7 +56,8 @@ import serp.util.Strings;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractDataCache extends AbstractConcurrentEventManager
-    implements DataCache, Configurable {
+    implements DataCache, Configurable
+{
 	
     protected CacheStatisticsSPI _stats = new CacheStatisticsImpl();
 
@@ -132,9 +133,6 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void commit(Collection<DataCachePCData> additions, Collection<DataCachePCData> newUpdates,
             Collection<DataCachePCData> existingUpdates, Collection<Object> deletes) {
-        // remove all objects in deletes list
-        removeAllInternal(deletes);
-
         // next, add all the new additions
         putAllInternal(additions);
         putAllInternal(newUpdates);
@@ -143,6 +141,11 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
         // semantics of the cache, as dictated by recacheUpdates()
         if (recacheUpdates())
             putAllInternal(existingUpdates);
+
+		// remove all objects in deletes list
+		// todo - report this bug to JPA.  Deletes were coming first and then updates were putting them back
+		// in the cache.  (Bob K).
+        removeAllInternal(deletes);
 
         if (log.isTraceEnabled()) {
             Collection<Object> addIds = new ArrayList<Object>(additions.size());
