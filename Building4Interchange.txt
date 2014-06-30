@@ -1,0 +1,5 @@
+1) Make your modifications to the applicable source files
+2) Run OpenJPA Parent POM -> clean
+3) Run OpenJPA Parent POM -> package (you probably want to skip tests)
+4) copy ./openjpa/target/openjpa-2.1.1-CUSTOMIZED.jar to Interchange/corelib
+5) Check in changes as normal.
