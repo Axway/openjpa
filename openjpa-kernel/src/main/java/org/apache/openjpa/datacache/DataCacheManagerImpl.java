@@ -168,7 +168,7 @@ public class DataCacheManagerImpl
      *  
      * @return TRUE or FALSE if  cache mode is configured. null otherwise.
      */
-    private Boolean isCacheableByMode(ClassMetaData meta) { 
+    private Boolean isCacheableByMode(ClassMetaData meta) {
         String mode = _conf.getDataCacheMode();
         if (DataCacheMode.ALL.toString().equalsIgnoreCase(mode))
             return true;
@@ -186,7 +186,7 @@ public class DataCacheManagerImpl
      *  
      * @see ClassMetaData#getDataCacheName()
      */
-    private Boolean isCacheableByType(ClassMetaData meta) { 
+    private Boolean isCacheableByType(ClassMetaData meta) {
         if (_includedTypes != null && _includedTypes.size() > 0) {
             return _includedTypes.contains(meta.getDescribedType().getName());
         }

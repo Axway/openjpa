@@ -96,7 +96,7 @@ public class PersistenceProductDerivation
     private HashMap<String, PUNameCollision> _puNameCollisions
         = new HashMap<String,PUNameCollision>();
     
-    public static final String PREFIX = "javax.persistence"; 
+    public static final String PREFIX = "javax.persistence";
     
     // These are properties that are invalid to be configured at the provider level. 
     private static final String[] _invalidPersistenceProperties =
@@ -232,7 +232,7 @@ public class PersistenceProductDerivation
      */
     private void configureBeanValidation(OpenJPAConfigurationImpl conf) {
         // Validation defines/adds the following plugins to OpenJPA Configuration
-        conf.validationFactory         = conf.addObject(JPAProperties.VALIDATE_FACTORY); 
+        conf.validationFactory         = conf.addObject(JPAProperties.VALIDATE_FACTORY);
         conf.validator                 = conf.addObject("Validator");
         conf.validationMode            = conf.addString(JPAProperties.VALIDATE_MODE);
         conf.validationGroupPrePersist = conf.addString(JPAProperties.VALIDATE_PRE_PERSIST);
@@ -353,7 +353,7 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public ConfigurationProvider load(String rsrc, String anchor, 
+    public ConfigurationProvider load(String rsrc, String anchor,
         ClassLoader loader)
         throws IOException {
         if (rsrc != null && !rsrc.endsWith(".xml"))
@@ -365,14 +365,14 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public ConfigurationProvider load(File file, String anchor) 
+    public ConfigurationProvider load(File file, String anchor)
         throws IOException {
         if (!file.getName().endsWith(".xml"))
             return null;
 
         ConfigurationParser parser = new ConfigurationParser(null);
         parser.parse(file);
-        return load(findUnit((List<PersistenceUnitInfoImpl>) 
+        return load(findUnit((List<PersistenceUnitInfoImpl>)
             parser.getResults(), anchor, null), null);
     }
 
@@ -437,7 +437,7 @@ public class PersistenceProductDerivation
         String rsrc = null;
         for (int i = 0; i < prefixes.length && StringUtils.isEmpty(rsrc); i++)
            rsrc = AccessController.doPrivileged(J2DoPrivHelper
-                .getPropertyAction(prefixes[i] + ".properties")); 
+                .getPropertyAction(prefixes[i] + ".properties"));
         boolean explicit = !StringUtils.isEmpty(rsrc);
         String anchor = null;
         int idx = (!explicit) ? -1 : rsrc.lastIndexOf('#');
@@ -486,7 +486,7 @@ public class PersistenceProductDerivation
         throws IOException {
         Enumeration<URL> urls = null;
         try {
-            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
+            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc));
             if (!urls.hasMoreElements()) {
                 if (!rsrc.startsWith("META-INF"))
                   urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, "META-INF/" + rsrc));
@@ -510,7 +510,7 @@ public class PersistenceProductDerivation
      * @return {@link Boolean#TRUE} if the resource was loaded, null if it
      * does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
      */
-    private Boolean load(ConfigurationProviderImpl cp, String rsrc, 
+    private Boolean load(ConfigurationProviderImpl cp, String rsrc,
         String name, Map m, ClassLoader loader, boolean explicit)
         throws IOException {
         ClassLoader contextLoader = null;         
@@ -528,14 +528,14 @@ public class PersistenceProductDerivation
         if (pinfo == null) {
             if (!explicit)
                 return Boolean.FALSE;
-            throw new MissingResourceException(_loc.get("missing-xml-config", 
+            throw new MissingResourceException(_loc.get("missing-xml-config",
                 rsrc, String.valueOf(name)).getMessage(), getClass().getName(), rsrc);
         } else if (!isOpenJPAPersistenceProvider(pinfo, loader)) {
             if (!explicit) {
                 warnUnknownProvider(pinfo);
                 return Boolean.FALSE;
             }
-            throw new MissingResourceException(_loc.get("unknown-provider", 
+            throw new MissingResourceException(_loc.get("unknown-provider",
                 rsrc, name, pinfo.getPersistenceProviderClassName()).
                 getMessage(), getClass().getName(), rsrc);
         }
@@ -582,7 +582,7 @@ public class PersistenceProductDerivation
      * Find the unit with the given name, or an OpenJPA unit if no name is
      * given (preferring an unnamed OpenJPA unit to a named one).
      */
-    private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl> 
+    private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl>
         pinfos, String name, ClassLoader loader) {
         PersistenceUnitInfoImpl ojpa = null;
         PersistenceUnitInfoImpl result = null;
@@ -710,7 +710,7 @@ public class PersistenceProductDerivation
                     String key = ProductDerivations.getConfigurationKey("MetaDataFactory", getProperties());
                     Object override = getProperties().get(key);
                     if (override instanceof String)
-                        addProperty(key, Configurations.combinePlugins(orig, (String) override));
+                        addProperty(key, Configurations.combinePlugins(orig, (String)override));
                 }
             }
             super.setInto(conf, null);
@@ -842,7 +842,7 @@ public class PersistenceProductDerivation
             String persistencexsd = "persistence-xsd.rsrc";
             // if the version and/or schema location is for 1.0, use the 1.0 
             // schema
-            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0) 
+            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0)
             || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
                 persistencexsd = "persistence_2_0-xsd.rsrc";
             }
@@ -1000,7 +1000,7 @@ public class PersistenceProductDerivation
         
         void logCollision(Log logger){
             if(logger.isWarnEnabled()){
-                logger.warn(_loc.getFatal("dup-pu", new Object[]{_puName,_resources.toString(),	
+                logger.warn(_loc.getFatal("dup-pu", new Object[]{_puName,_resources.toString(),
                     _resources.iterator().next()}));
             }
         }

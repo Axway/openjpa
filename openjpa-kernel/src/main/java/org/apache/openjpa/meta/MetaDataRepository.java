@@ -345,8 +345,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             try {
                 Class<?> cls = AccessController.doPrivileged((J2DoPrivHelper.getForNameAction(c, true, multi)));
                 loaded.add(cls);
-                // This call may be unnecessary?
-                _factory.load(cls, MODE_ALL, multi);
+				// Todo - report to JPA.  It doesn't seem like annotations can be used if pre-load is
+				// set to true.  I added this if condition for _factory.load.  Notice JPA's comment
+				// that this might not be necessary.  Bob K.
+				ClassMetaData cmd = getCachedMetaData(cls);
+            	if (cmd != null) {
+					// This call may be unnecessary?
+					_factory.load(cls, MODE_ALL, multi);
+				}
             } catch (PrivilegedActionException pae) {
                 throw new MetaDataException(_loc.get("repos-initializeEager-error"), pae);
             }
@@ -1517,7 +1523,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private Collection<Class<?>> loadPersistentTypesInternal(boolean devpath, ClassLoader envLoader, 
+    private Collection<Class<?>> loadPersistentTypesInternal(boolean devpath, ClassLoader envLoader,
         boolean mustExist) {
             Set<String> names = getPersistentTypeNames(devpath, envLoader);
             if (names == null || names.isEmpty()) {
@@ -1962,7 +1968,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader, 
+    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader,
         boolean mustExist) {
             QueryMetaData meta = getQueryMetaDataInternal(cls, name, envLoader);
             if (meta == null) {
@@ -2117,7 +2123,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Searches all cached query metadata by name.
      */
-    public QueryMetaData searchQueryMetaDataByName(String name) {        
+    public QueryMetaData searchQueryMetaDataByName(String name) {
         return (QueryMetaData) _queries.get(name);
     }
     

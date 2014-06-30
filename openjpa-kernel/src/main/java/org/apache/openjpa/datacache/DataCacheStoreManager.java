@@ -124,7 +124,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
      * Update all caches with the committed inserts, updates, and deletes.
      */
     private void updateCaches() {
-        if(_ctx.getFetchConfiguration().getCacheStoreMode() != DataCacheStoreMode.BYPASS ) { 
+        if(_ctx.getFetchConfiguration().getCacheStoreMode() != DataCacheStoreMode.BYPASS ) {
             // map each data cache to the modifications we need to perform
             Map<DataCache,Modifications> modMap = null;
             if ((_ctx.getPopulateDataCache() && _inserts != null) || _updates != null || _deletes != null)
@@ -155,7 +155,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             if (_updates != null) {
                 BitSet fields;
                 OpenJPAStateManager sm;
-                for (Map.Entry<OpenJPAStateManager, BitSet> entry : _updates.entrySet()) { 
+                for (Map.Entry<OpenJPAStateManager, BitSet> entry : _updates.entrySet()) {
                     sm = entry.getKey();
                     fields = entry.getValue();
 
@@ -192,7 +192,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
             // remove pcdatas for deletes
             if (_deletes != null) {
-                for (OpenJPAStateManager sm : _deletes) { 
+                for (OpenJPAStateManager sm : _deletes) {
                     cache = _mgr.selectCache(sm);
                     if (cache == null)
                         continue;
@@ -212,9 +212,9 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                     cache.writeLock();
                     try {
                         cache.commit(
-                                transformToVersionSafePCDatas(cache, mods.additions), 
-                                transformToVersionSafePCDatas(cache, mods.newUpdates), 
-                                transformToVersionSafePCDatas(cache, mods.existingUpdates), 
+                                transformToVersionSafePCDatas(cache, mods.additions),
+                                transformToVersionSafePCDatas(cache, mods.newUpdates),
+                                transformToVersionSafePCDatas(cache, mods.existingUpdates),
                                 mods.deletes);
                     } finally {
                         cache.writeUnlock();
@@ -330,7 +330,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         Object version = null;
         data = cache.get(sm.getObjectId());
         if (!isLocking(null) && data != null)
-            version = data.getVersion(); 
+            version = data.getVersion();
 
         // if we have a cached version update from there
         if (version != null) {
@@ -360,9 +360,9 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
         DataCachePCData data = cache.get(sm.getObjectId());
         CacheStatistics stats = cache.getStatistics();
-        boolean fromDatabase = false; 
-        boolean alreadyCached = data != null; 
-        if (sm.isEmbedded() 
+        boolean fromDatabase = false;
+        boolean alreadyCached = data != null;
+        if (sm.isEmbedded()
          || fetch.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
          || fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
             // stats -- Skipped reading from the cache, noop
@@ -377,7 +377,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             } else {
                 if (!alreadyCached) {
                     if (stats.isEnabled()) {
-                        // Get the classname from MetaData... but this won't be right in every case. 
+                        // Get the classname from MetaData... but this won't be right in every case.
                         ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
                     }
                 }
@@ -401,9 +401,9 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         }
         return fromDatabase || alreadyCached;
     }
-    
+
     private void cacheStateManager(DataCache cache, OpenJPAStateManager sm, DataCachePCData data) {
-        if (sm.isFlushed()) { 
+        if (sm.isFlushed()) {
             return;
         }
         // make sure that we're not trying to cache an old version
@@ -421,7 +421,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                 data = newPCData(sm, cache);
             }
             data.store(sm);
-            if (isNew) { 
+            if (isNew) {
                 cache.put(data);
             } else {
                 cache.update(data);
@@ -471,7 +471,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
     /**
      * Updates or inserts and item into the data cache.  If storeMode=USE and not in the cache,
-     * the item is inserted.  If storeMode=REFRESH the item is inserted, updated, or if found=false, 
+     * the item is inserted.  If storeMode=REFRESH the item is inserted, updated, or if found=false,
      * removed from the cache.
      * @param found whether the entity was found by the store manager
      * @param sm the state manager
@@ -491,7 +491,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
         }
 
         DataCachePCData data = cache.get(sm.getObjectId());
-        
+
         // If loadedFieldsChanged = true, we don't care that data was already stored as we should update it.
         boolean alreadyCached = (data != null && !loadedFieldsChanged);
         DataCacheStoreMode storeMode = fetch.getCacheStoreMode();
@@ -545,7 +545,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             } else if (!cache.contains(sm.getObjectId()))
                 unloaded = addUnloaded(sm, null, unloaded);
         }
-        
+
     for(Entry<DataCache,List<OpenJPAStateManager>> entry : caches.entrySet()){
             cache = entry.getKey();
             smList = entry.getValue();
@@ -554,7 +554,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
             for (OpenJPAStateManager sm : smList) {
                 oidList.add((OpenJPAId) sm.getObjectId());
             }
-            
+
             Map<Object,DataCachePCData> dataMap = cache.getAll(oidList);
 
             for (OpenJPAStateManager sm : smList) {
@@ -614,7 +614,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
 
         boolean isNew;
 
-        for(Map.Entry<OpenJPAStateManager, BitSet> entry : unloaded.entrySet()) { 
+        for(Map.Entry<OpenJPAStateManager, BitSet> entry : unloaded.entrySet()) {
             OpenJPAStateManager sm = entry.getKey();
             fields = entry.getValue();
 
@@ -692,7 +692,7 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
                     _deletes.remove(sm); 
                 }
             } else if (_inserts != null 
-                && (sm.getPCState() == PCState.PNEWDELETED 
+                && (sm.getPCState() == PCState.PNEWDELETED
                 || sm.getPCState() == PCState.PNEWFLUSHEDDELETED)) {
                 _inserts.remove(sm);
             }
