@@ -113,8 +113,8 @@
             <unpack>false</unpack>
             <scope>runtime</scope>
             <includes>
-                <include>org.apache.openjpa:openjpa</include>
-                <include>org.apache.openjpa:openjpa-all</include>
+                <include>com.axway.interchange.org.apache.openjpa:openjpa</include>
+                <include>com.axway.interchange.org.apache.openjpa:openjpa-all</include>
             </includes>
         </dependencySet>
         <dependencySet>
