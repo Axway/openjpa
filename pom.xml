@@ -30,7 +30,7 @@
       <relativePath />
     </parent>
 
-    <groupId>com.axway.interchange.org.apache.openjpa</groupId>
+    <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>

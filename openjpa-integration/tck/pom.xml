@@ -70,12 +70,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.axway.interchange.org.apache.openjpa</groupId>
+        <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>
         <version>2.1.1-AXWAY-1</version>
     </parent>
 
-    <groupId>com.axway.interchange.org.apache.openjpa</groupId>
+    <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
     <artifactId>openjpa-integration-tck</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Integration Tests - JPA TCK</name>
@@ -200,7 +200,7 @@
         <!-- Just pull in openjpa-all, which will include all required deps -->
         <dependencies>
           <dependency>
-            <groupId>com.axway.interchange.org.apache.openjpa</groupId>
+            <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
             <artifactId>openjpa-all</artifactId>
             <version>${project.version}</version>
           </dependency>
@@ -429,7 +429,7 @@ databaseName=${db.name}
             <scope>compile</scope>
           </dependency>
           <dependency>
-            <groupId>com.axway.interchange.org.apache.openjpa</groupId>
+            <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
             <version>${project.version}</version>
           </dependency>
