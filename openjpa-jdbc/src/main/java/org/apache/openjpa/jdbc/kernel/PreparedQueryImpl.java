@@ -64,12 +64,18 @@ import org.apache.openjpa.util.UserException;
  *
  */
 public class PreparedQueryImpl implements PreparedQuery {
+
+	static
+	{
+		// Not sure how to get to a jpa logger from here.
+		System.out.println("openJpa 2.1.1 - Axway Patch - M133092.v1");
+	}
     private static Localizer _loc = 
         Localizer.forPackage(PreparedQueryImpl.class);
 
     private final String _id;
     private String _sql;
-    private boolean _initialized;
+    private volatile boolean _initialized;
     
     // Post-compilation state of an executable query, populated on construction
     private Class<?> _candidate;
@@ -165,34 +171,42 @@ public class PreparedQueryImpl implements PreparedQuery {
      * null if initialization is successful. 
      */
     public Exclusion initialize(Object result) {
-        if (isInitialized())
+        if (_initialized)
             return null;
-        Object[] extract = extractSelectExecutor(result);
-        SelectExecutor selector = (SelectExecutor)extract[0];
-        if (selector == null)
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, ((Localizer.Message)extract[1]).getMessage());
-        if (selector == null || selector.hasMultipleSelects()
-            || ((selector instanceof Union) 
-            && (((Union)selector).getSelects().length != 1)))
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-multi-select", _id).getMessage());
-        select = extractImplementation(selector);
-        if (select == null)
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-select", _id).getMessage());
-        SQLBuffer buffer = selector.getSQL();
-        if (buffer == null)
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql", _id).getMessage());;
-        if (isUsingFieldStrategy())
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, 
-                _loc.get("exclude-user-strategy", _id).getMessage());;
-                
-        if (isPaginated())
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, 
-                _loc.get("exclude-pagination", _id).getMessage());;
+		synchronized (this)
+		{
+			if (_initialized)
+				return null;
+			Object[] extract = extractSelectExecutor(result);
+			SelectExecutor selector = (SelectExecutor)extract[0];
+			if (selector == null)
+				return new PreparedQueryCacheImpl.StrongExclusion(_id, ((Localizer.Message)extract[1]).getMessage());
+			if (selector == null || selector.hasMultipleSelects()
+					|| ((selector instanceof Union)
+					&& (((Union)selector).getSelects().length != 1)))
+				return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-multi-select", _id).getMessage());
+			select = extractImplementation(selector);
+			if (select == null)
+				return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-select", _id).getMessage());
+			SQLBuffer buffer = selector.getSQL();
+			if (buffer == null)
+				return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql", _id).getMessage());
+			;
+			if (isUsingFieldStrategy())
+				return new PreparedQueryCacheImpl.StrongExclusion(_id,
+						_loc.get("exclude-user-strategy", _id).getMessage());
+			;
 
-        setTargetQuery(buffer.getSQL());
-        setParameters(buffer.getParameters());
-        setUserParameterPositions(buffer.getUserParameters());
-        _initialized = true;
+			if (isPaginated())
+				return new PreparedQueryCacheImpl.StrongExclusion(_id,
+						_loc.get("exclude-pagination", _id).getMessage());
+			;
+
+			setTargetQuery(buffer.getSQL());
+			setParameters(buffer.getParameters());
+			setUserParameterPositions(buffer.getUserParameters());
+			_initialized = true;
+		}
         
         return null;
     }
