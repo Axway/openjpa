@@ -68,7 +68,7 @@ public class PreparedQueryImpl implements PreparedQuery {
 	static
 	{
 		// Not sure how to get to a jpa logger from here.
-		System.out.println("openJpa 2.1.1 - Axway Patch - M133092.v1");
+		System.out.println("openJpa 2.1.1 - Axway Patch - M133092.v1.1");
 	}
     private static Localizer _loc = 
         Localizer.forPackage(PreparedQueryImpl.class);
