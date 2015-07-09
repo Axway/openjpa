@@ -1,0 +1,16 @@
+21c21
+<   public java$util$Properties$proxy()
+---
+>   public java$util$Properties$proxy(Properties paramProperties)
+22a23
+>     super(paramProperties);
+25c26
+<   public java$util$Properties$proxy(Properties paramProperties)
+---
+>   public java$util$Properties$proxy()
+27d27
+<     super(paramProperties);
+157c157
+< /* Location:           C:\Users\srybak\dev\java\projects\GI\repository\5.12.0.0.x-acf\corelib\openjpa-2.1.1-CUSTOMIZED\
+---
+> /* Location:           C:\Users\srybak\dev\java\projects\3rd_party_customized\openjpa\branches\2.1.1\openjpa\target\openjpa-2.1.1-AXWAY-1\

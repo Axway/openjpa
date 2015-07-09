@@ -1,0 +1,104 @@
+5a6
+> /*     */ import java.sql.SQLFeatureNotSupportedException;
+8a10
+> /*     */ import java.util.logging.Logger;
+17c19
+< /*  41 */   private List<DataSource> real = new ArrayList();
+---
+> /*  43 */   private List<DataSource> real = new ArrayList();
+22,24c24,26
+< /*  45 */     super((DataSource)dataSources.get(0));
+< /*  46 */     this.real = dataSources;
+< /*  47 */     this.master = ((DataSource)dataSources.get(0));
+---
+> /*  47 */     super((DataSource)dataSources.get(0));
+> /*  48 */     this.real = dataSources;
+> /*  49 */     this.master = ((DataSource)dataSources.get(0));
+28c30
+< /*  51 */     this.real.add(ds);
+---
+> /*  53 */     this.real.add(ds);
+32,33c34,35
+< /*  55 */     if ((ds instanceof DecoratingDataSource)) {
+< /*  56 */       return getConnection(((DecoratingDataSource)ds).getInnermostDelegate());
+---
+> /*  57 */     if ((ds instanceof DecoratingDataSource)) {
+> /*  58 */       return getConnection(((DecoratingDataSource)ds).getInnermostDelegate());
+35,37c37,39
+< /*  58 */     if ((ds instanceof XADataSource))
+< /*  59 */       return ((XADataSource)ds).getXAConnection().getConnection();
+< /*  60 */     return ds.getConnection();
+---
+> /*  60 */     if ((ds instanceof XADataSource))
+> /*  61 */       return ((XADataSource)ds).getXAConnection().getConnection();
+> /*  62 */     return ds.getConnection();
+42,43c44,45
+< /*  65 */     if ((ds instanceof DecoratingDataSource)) {
+< /*  66 */       return getConnection(((DecoratingDataSource)ds).getInnermostDelegate(), user, pwd);
+---
+> /*  67 */     if ((ds instanceof DecoratingDataSource)) {
+> /*  68 */       return getConnection(((DecoratingDataSource)ds).getInnermostDelegate(), user, pwd);
+45,46c47,48
+< /*  68 */     if ((ds instanceof XADataSource)) {
+< /*  69 */       return ((XADataSource)ds).getXAConnection(user, pwd).getConnection();
+---
+> /*  70 */     if ((ds instanceof XADataSource)) {
+> /*  71 */       return ((XADataSource)ds).getXAConnection(user, pwd).getConnection();
+48c50
+< /*  71 */     return ds.getConnection(user, pwd);
+---
+> /*  73 */     return ds.getConnection(user, pwd);
+52c54
+< /*  75 */     return this.real.iterator();
+---
+> /*  77 */     return this.real.iterator();
+56,59c58,61
+< /*  79 */     List c = new ArrayList();
+< /*  80 */     for (DataSource ds : this.real)
+< /*  81 */       c.add(ds.getConnection());
+< /*  82 */     return DistributedConnection.newInstance(c);
+---
+> /*  81 */     List c = new ArrayList();
+> /*  82 */     for (DataSource ds : this.real)
+> /*  83 */       c.add(ds.getConnection());
+> /*  84 */     return DistributedConnection.newInstance(c);
+64,67c66,69
+< /*  87 */     List c = new ArrayList();
+< /*  88 */     for (DataSource ds : this.real)
+< /*  89 */       c.add(ds.getConnection(username, password));
+< /*  90 */     return DistributedConnection.newInstance(c);
+---
+> /*  89 */     List c = new ArrayList();
+> /*  90 */     for (DataSource ds : this.real)
+> /*  91 */       c.add(ds.getConnection(username, password));
+> /*  92 */     return DistributedConnection.newInstance(c);
+71c73
+< /*  94 */     return this.master.getLogWriter();
+---
+> /*  96 */     return this.master.getLogWriter();
+75c77
+< /*  98 */     return this.master.getLoginTimeout();
+---
+> /* 100 */     return this.master.getLoginTimeout();
+79,80c81,82
+< /* 102 */     for (DataSource ds : this.real)
+< /* 103 */       ds.setLogWriter(out);
+---
+> /* 104 */     for (DataSource ds : this.real)
+> /* 105 */       ds.setLogWriter(out);
+84,85c86,87
+< /* 107 */     for (DataSource ds : this.real)
+< /* 108 */       ds.setLoginTimeout(seconds);
+---
+> /* 109 */     for (DataSource ds : this.real)
+> /* 110 */       ds.setLoginTimeout(seconds);
+90a93,97
+> /*     */ 
+> /*     */   public Logger getParentLogger() throws SQLFeatureNotSupportedException
+> /*     */   {
+> /* 119 */     return null;
+> /*     */   }
+93c100
+< /* Location:           C:\Users\srybak\dev\java\projects\GI\repository\5.12.0.0.x-acf\corelib\openjpa-2.1.1-CUSTOMIZED\
+---
+> /* Location:           C:\Users\srybak\dev\java\projects\3rd_party_customized\openjpa\branches\2.1.1\openjpa\target\openjpa-2.1.1-AXWAY-1\

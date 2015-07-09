@@ -1,0 +1,14 @@
+18,21d17
+<   public java$util$HashSet$proxy()
+<   {
+<   }
+< 
+36a33,36
+>   public java$util$HashSet$proxy()
+>   {
+>   }
+> 
+132c132
+< /* Location:           C:\Users\srybak\dev\java\projects\GI\repository\5.12.0.0.x-acf\corelib\openjpa-2.1.1-CUSTOMIZED\
+---
+> /* Location:           C:\Users\srybak\dev\java\projects\3rd_party_customized\openjpa\branches\2.1.1\openjpa\target\openjpa-2.1.1-AXWAY-1\

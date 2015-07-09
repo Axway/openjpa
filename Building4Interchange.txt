@@ -1,3 +1,5 @@
+PLEASE SEE NOTE BELOW; the manual building of this project can still be done, but deployment to maven repository is now done as a final step of jenkins job: 3rd_party_customized_openjpa-2.1.1
+
 1) Make your modifications to the applicable source files
 2) Run OpenJPA Parent POM -> clean
 3) Run OpenJPA Parent POM -> package (you probably want to skip tests)
@@ -9,17 +11,8 @@ Seby noticed that com.axway.interchange:openjpa-2.1.1-CUSTOMIZED.jar in artifact
 
 When I have built openjpa jar from branches/2.1.1 sources, we've noticed that there were number of classes were different from openjpa-2.1.1-CUSTOMIZED.jar in 5.12 SP3 branch. Also, looking at the dates of the classes in CUSTOMIZED jar, all but one are dated 5/6/2014 while branches/2.1.1 sources here were added June 30th, 2014, which would support the hypothesis that openjpa-2.1.1-CUSTOMIZED.jar in SP3 was never built from sources in branches/2.1.1;
 
-So, we (Seby and me) decided to keep using SP3 openjpa jar, but rename it from openjpa-2.1.1-CUSTOMIZED.jar to openjpa-2.1.1-AXWAY-1.jar, because we will be moving to openjpa 2.4 and java 8 shortly and not waste time and effor to test the new jar built from branches/2.1.1 sources. So, untill the upgrade to openjpa 2.4 we will be using SP3 openjpa-2.1.1-CUSTOMIZED.jar renamed to openjpa-2.1.1-AXWAY-1.jar and published to artifactory.
+Since deploying of a single jar is strongly discouraged by company policy, we've opted to create 3rd_party_customized_openjpa-2.1.1 job and build and deploy this project that way.
+PLEASE NOTE:
+there is an extra directory: 'different-from-sp3-customized' listing all classes different between the current project and what was used in SP3 along with diff files showing the differences
 
-This is the jar in SP3:
-$ sha1sum ./5.12.0.0.x-acf/corelib/openjpa-2.1.1-CUSTOMIZED.jar
-a223752cdff193f147625147ab748b12135e254f *./5.12.0.0.x-acf/corelib/openjpa-2.1.1-CUSTOMIZED.jar
-
-This is the jar built from sources in 3rd_party_customized/openjpa/branches/2.1.1 AND NOT USED
-$ sha1sum ./2.1.1/openjpa/target/openjpa-2.1.1-AXWAY-1.jar
-5b7e73d07f252d7ddd3f25e3927bf0b9cffbd5ac *./2.1.1/openjpa/target/openjpa-2.1.1-AXWAY-1.jar
-
-This is the SP3 openjpa jar renamed to conform to ECD naming and published to maven artifactory
-$ sha1sum /cygdrive/z/3rdPartyTmp/openjpa-2.1.1-AXWAY-1.jar
-a223752cdff193f147625147ab748b12135e254f */cygdrive/z/3rdPartyTmp/openjpa-2.1.1-AXWAY-1.jar
 

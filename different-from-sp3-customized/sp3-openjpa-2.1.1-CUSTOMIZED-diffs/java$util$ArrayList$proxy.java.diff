@@ -1,0 +1,60 @@
+19,23d18
+<   public java$util$ArrayList$proxy(int paramInt)
+<   {
+<     super(paramInt);
+<   }
+< 
+32a28,32
+>   public java$util$ArrayList$proxy(int paramInt)
+>   {
+>     super(paramInt);
+>   }
+> 
+80,85d79
+<   public void add(int paramInt, Object paramObject)
+<   {
+<     ProxyCollections.beforeAdd(this, paramInt, paramObject);
+<     super.add(paramInt, paramObject);
+<   }
+< 
+93c87
+<   public void clear()
+---
+>   public void add(int paramInt, Object paramObject)
+95,96c89,90
+<     ProxyCollections.beforeClear(this);
+<     super.clear();
+---
+>     ProxyCollections.beforeAdd(this, paramInt, paramObject);
+>     super.add(paramInt, paramObject);
+99c93
+<   public boolean addAll(Collection paramCollection)
+---
+>   public void clear()
+101c95,96
+<     return ProxyCollections.addAll(this, paramCollection);
+---
+>     ProxyCollections.beforeClear(this);
+>     super.clear();
+109c104
+<   public Object remove(int paramInt)
+---
+>   public boolean addAll(Collection paramCollection)
+111,113c106
+<     ProxyCollections.beforeRemove(this, paramInt);
+<     Object localObject = super.remove(paramInt);
+<     return ProxyCollections.afterRemove(this, paramInt, localObject);
+---
+>     return ProxyCollections.addAll(this, paramCollection);
+122a116,122
+>   public Object remove(int paramInt)
+>   {
+>     ProxyCollections.beforeRemove(this, paramInt);
+>     Object localObject = super.remove(paramInt);
+>     return ProxyCollections.afterRemove(this, paramInt, localObject);
+>   }
+> 
+165c165
+< /* Location:           C:\Users\srybak\dev\java\projects\GI\repository\5.12.0.0.x-acf\corelib\openjpa-2.1.1-CUSTOMIZED\
+---
+> /* Location:           C:\Users\srybak\dev\java\projects\3rd_party_customized\openjpa\branches\2.1.1\openjpa\target\openjpa-2.1.1-AXWAY-1\
