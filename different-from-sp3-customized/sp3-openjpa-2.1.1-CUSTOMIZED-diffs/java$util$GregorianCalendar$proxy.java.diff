@@ -1,0 +1,32 @@
+42c42
+<   public java$util$GregorianCalendar$proxy()
+---
+>   public java$util$GregorianCalendar$proxy(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6)
+43a44
+>     super(paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6);
+46c47
+<   public java$util$GregorianCalendar$proxy(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6)
+---
+>   public java$util$GregorianCalendar$proxy()
+48d48
+<     super(paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6);
+117c117
+<   public void roll(int paramInt, boolean paramBoolean)
+---
+>   public void roll(int paramInt1, int paramInt2)
+120c120
+<     super.roll(paramInt, paramBoolean);
+---
+>     super.roll(paramInt1, paramInt2);
+123c123
+<   public void roll(int paramInt1, int paramInt2)
+---
+>   public void roll(int paramInt, boolean paramBoolean)
+126c126
+<     super.roll(paramInt1, paramInt2);
+---
+>     super.roll(paramInt, paramBoolean);
+172c172
+< /* Location:           C:\Users\srybak\dev\java\projects\GI\repository\5.12.0.0.x-acf\corelib\openjpa-2.1.1-CUSTOMIZED\
+---
+> /* Location:           C:\Users\srybak\dev\java\projects\3rd_party_customized\openjpa\branches\2.1.1\openjpa\target\openjpa-2.1.1-AXWAY-1\

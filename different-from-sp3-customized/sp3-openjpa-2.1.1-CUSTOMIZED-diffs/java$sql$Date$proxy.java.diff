@@ -1,0 +1,20 @@
+12c12
+<   public java$sql$Date$proxy(int paramInt1, int paramInt2, int paramInt3)
+---
+>   public java$sql$Date$proxy(long paramLong)
+14c14
+<     super(paramInt1, paramInt2, paramInt3);
+---
+>     super(paramLong);
+17c17
+<   public java$sql$Date$proxy(long paramLong)
+---
+>   public java$sql$Date$proxy(int paramInt1, int paramInt2, int paramInt3)
+19c19
+<     super(paramLong);
+---
+>     super(paramInt1, paramInt2, paramInt3);
+114c114
+< /* Location:           C:\Users\srybak\dev\java\projects\GI\repository\5.12.0.0.x-acf\corelib\openjpa-2.1.1-CUSTOMIZED\
+---
+> /* Location:           C:\Users\srybak\dev\java\projects\3rd_party_customized\openjpa\branches\2.1.1\openjpa\target\openjpa-2.1.1-AXWAY-1\
