@@ -14,12 +14,13 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
@@ -83,7 +84,7 @@ abstract class CompareEqualExpression
             flags1 = flags1 | Val.CMP_EQUAL;
             flags2 = flags2 | Val.CMP_EQUAL;
         }
-        
+
         if (s1 == null)
             s1 = _val1.initialize(sel, ctx, flags1);
         if (s2 == null)
@@ -91,15 +92,26 @@ abstract class CompareEqualExpression
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.calculateValue(sel, ctx, bstate.state1, _val2, bstate.state2);
         _val2.calculateValue(sel, ctx, bstate.state2, _val1, bstate.state1);
-        if (!Filters.canConvert(_val1.getType(), _val2.getType(), false)
-            && !Filters.canConvert(_val2.getType(), _val1.getType(), false))
-            throw new UserException(_loc.get("cant-convert", _val1.getType(),
-                _val2.getType()));
+
+        Class val1Type = _val1.getType();
+        Class val2Type = _val2.getType();
+
+        // For purposes of the 'canConvert', when dealing with a Lit with Raw
+        // use a String type since Raw contains a String.
+        if (_val1 instanceof Lit && val1Type.isAssignableFrom(Raw.class)){
+            val1Type = String.class;
+        }
+        if (_val2 instanceof Lit && val2Type.isAssignableFrom(Raw.class)){
+            val2Type = String.class;
+        }
+        if (!Filters.canConvert(val1Type, val2Type, false)
+            && !Filters.canConvert(val2Type, val1Type, false))
+            throw new UserException(_loc.get("cant-convert", val1Type, val2Type));
 
         boolean val1Null = _val1 instanceof Const
             && ((Const) _val1).isSQLValueNull(sel, ctx, bstate.state1);
@@ -110,7 +122,7 @@ abstract class CompareEqualExpression
             sel.append(buf, state.joins);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.selectColumns(sel, ctx, bstate.state1, true);
@@ -120,8 +132,8 @@ abstract class CompareEqualExpression
     /**
      * Append the SQL for the comparison.
      */
-    protected abstract void appendTo(Select sel, ExpContext ctx, 
-        BinaryOpExpState state, SQLBuffer buf, boolean val1Null, 
+    protected abstract void appendTo(Select sel, ExpContext ctx,
+        BinaryOpExpState state, SQLBuffer buf, boolean val1Null,
         boolean val2Null);
 
     /**
