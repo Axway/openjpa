@@ -14,12 +14,13 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
@@ -62,15 +63,27 @@ class CompareExpression
         return new BinaryOpExpState(sel.and(s1.joins, s2.joins), s1, s2);
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer buf) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.calculateValue(sel, ctx, bstate.state1, _val2, bstate.state2);
         _val2.calculateValue(sel, ctx, bstate.state2, _val1, bstate.state1);
-        if (!Filters.canConvert(_val1.getType(), _val2.getType(), false)
-            && !Filters.canConvert(_val2.getType(), _val1.getType(), false))
-            throw new UserException(_loc.get("cant-convert", _val1.getType(),
-                _val2.getType()));
+
+
+        Class val1Type = _val1.getType();
+        Class val2Type = _val2.getType();
+
+        // For purposes of the 'canConvert', when dealing with a Lit with Raw
+        // use a String type since Raw contains a String.
+        if (_val1 instanceof Lit && val1Type.isAssignableFrom(Raw.class)){
+            val1Type = String.class;
+        }
+        if (_val2 instanceof Lit && val2Type.isAssignableFrom(Raw.class)){
+            val2Type = String.class;
+        }
+        if (!Filters.canConvert(val1Type, val2Type, false)
+            && !Filters.canConvert(val2Type, val1Type, false))
+            throw new UserException(_loc.get("cant-convert", val1Type, val2Type));
 
         ctx.store.getDBDictionary().comparison(buf, _op,
             new FilterValueImpl(sel, ctx, bstate.state1, _val1),
@@ -79,7 +92,7 @@ class CompareExpression
             sel.append(buf, state.joins);
     }
 
-    public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
+    public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         _val1.selectColumns(sel, ctx, bstate.state1, true);
