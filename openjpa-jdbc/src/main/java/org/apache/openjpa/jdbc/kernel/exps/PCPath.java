@@ -19,10 +19,14 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.sql.SQLException;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -262,13 +266,27 @@ public class PCPath
                 path.append(action.data);
             else if (action.op == Action.UNBOUND_VAR)
                 path.append(((Variable) action.data).getName());
-            else 
+            else
                 path.append(((FieldMapping) action.data).getName());
             path.append('.');
         }
         if (_varName != null)
             path.append(_varName).append('.');
         return path.toString();
+    }
+
+    public synchronized void setContainsId(Map contains)
+    {
+        String path = getPCPathString();
+        // update the count for this path
+        Integer count = (Integer) contains.get(path);
+        if (count == null)
+            count = 0;
+        else
+            count = count.intValue() + 1;
+        contains.put(path, count);
+
+        setContainsId(count.toString());
     }
 
     public ClassMapping getClassMapping(ExpState state) {
