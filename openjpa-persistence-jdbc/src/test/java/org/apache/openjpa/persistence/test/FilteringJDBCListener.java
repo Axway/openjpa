@@ -48,6 +48,10 @@ public class FilteringJDBCListener extends AbstractJDBCListener {
         // ignore connection setup SQL for Sybase
         _ignoredSQL.add(SybaseDictionary.NUMERIC_TRUNCATION_OFF_SQL);
         _ignoredSQL.add(SybaseDictionary.RIGHT_TRUNCATION_ON_SQL);
+
+        // Ignore connection setup SQL for NuoDB
+        // TODO need to figure out how to not hard code this
+        _ignoredSQL.add("USE TEST");
     }
 
     @Override
