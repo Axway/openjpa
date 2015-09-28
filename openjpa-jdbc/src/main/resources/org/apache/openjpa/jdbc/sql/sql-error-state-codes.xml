@@ -208,4 +208,13 @@
 		<query></query>
 	</dictionary>
 
+
+	<dictionary class="org.apache.openjpa.jdbc.sql.NuoDBDictionary">
+		<lock></lock>
+		<referential-integrity></referential-integrity>
+		<object-exists>23000</object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
+		<query></query>
+	</dictionary>
 </sql-state-codes>

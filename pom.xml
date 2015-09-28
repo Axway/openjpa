@@ -81,6 +81,10 @@
         <hsqldb.version>1.8.0.10</hsqldb.version>
         <mysql.version>5.1.12</mysql.version>
         <postgresql.version>8.4-701.jdbc3</postgresql.version>
+        <nuodb.version>2.3.1</nuodb.version>
+        <openjpa.nuodb.url>jdbc:com.nuodb://linux122.lab.phx.axway.int:48004/openjpa</openjpa.nuodb.url>
+        <openjpa.nuodb.schema>test</openjpa.nuodb.schema>
+
         <!-- other common versions -->
         <slf4jVersion>1.6.1</slf4jVersion>
         <!-- Compile Java source/target class level -->

@@ -118,7 +118,35 @@
                 <dbcp.minIdle>0</dbcp.minIdle>
             </properties>
         </profile>
-        
+
+        <!-- Profile for testing with Nuo DB -->
+        <profile>
+            <id>test-nuodb</id>
+            <activation>
+                <property>
+                    <name>test-nuodb</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.nuodb.jdbc</groupId>
+                    <artifactId>nuodb-jdbc</artifactId>
+                    <version>${nuodb.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>com.nuodb.jdbc.Driver</connection.driver.name>
+                <connection.url>${openjpa.nuodb.url}</connection.url>
+                <connection.username>${openjpa.nuodb.username}</connection.username>
+                <connection.password>${openjpa.nuodb.password}</connection.password>
+                <openjpa.jdbc.Schema>TEST</openjpa.jdbc.Schema>
+                <jdbc.DBDictionary> org.apache.openjpa.jdbc.sql.NuoDBDictionary(InitializationSQL=USE TEST)</jdbc.DBDictionary>
+                <!-- DBCP overrides for MySQL testing -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+            </properties>
+        </profile>
         <!-- Profile for testing with MariaDB DB -->
         <profile>
             <id>test-mariadb</id>

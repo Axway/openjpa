@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jira1794;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -30,6 +31,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
 
+import org.apache.openjpa.lib.jdbc.JDBCListener;
+import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -53,11 +56,19 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
             "ae.intVal", "ae.plongVal", "ae.longVal", "ae.pfloatVal",
             "ae.floatVal", "ae.pdblVal", "ae.dblVal" };
 
+    private static JDBCListener listener;
+    private static List<String> sql = new ArrayList<String>();;
+
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES, AggEntity.class);
-    }
 
+        super.setUp(CLEAR_TABLES,
+                AggEntity.class,
+                "openjpa.jdbc.JDBCListeners", new JDBCListener[] { new FilteringJDBCListener(sql)} );
+    }
+    public List<String> getSql() {
+        return sql;
+    }
     protected boolean nullResultExpected() {
         return true;
     }
@@ -196,13 +207,13 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
             String[] attributes, boolean expectNull, boolean isString) {
         for (String func : aggregates) {
             for (String attr : attributes) {
+                sql.clear();
                 // JPQL with aggregate and aggregate in subselect
                 String sql = "SELECT " + func + "(" + attr + ")"
                         + " FROM AggEntity ae WHERE " + attr + " <= "
                         + "(SELECT " + func + "("
                         + attr.replaceFirst("^ae.", "ae2.")
                         + ") FROM AggEntity ae2)";
-                ;
                 Query q = em.createQuery(sql);
                 verifyQueryResult(q, expectNull, isString);
             }
@@ -216,6 +227,10 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
     private void verifyQueryResult(Query q, boolean emptyRs, boolean isString) {
         Object result = q.getSingleResult();
         if (!emptyRs && !isString) {
+            if (result == null) {
+                System.out.println(q.toString());
+                System.out.println(sql);
+            }
             assertNotNull(result);
         } else if (isString || nullResultExpected()) {
             assertNull(result);
