@@ -68,6 +68,8 @@ public class TestInExpressionParamaterBinding extends SingleEMFTestCase {
 
     public void tearDown() throws Exception {
         // block super class tear down
+        super.tearDown();
+        _emf = null;
     }
     
     private void createData() {
