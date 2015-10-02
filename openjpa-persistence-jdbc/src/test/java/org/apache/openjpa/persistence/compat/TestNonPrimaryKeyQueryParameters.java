@@ -68,32 +68,35 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
             query.setParameter(1, DEPT_NAME);
             Department dept = (Department) query.getSingleResult();
 
-            if (((OpenJPAVersion.MAJOR_RELEASE == 1) &&
-                 (OpenJPAVersion.MINOR_RELEASE >= 3)) ||
-                (OpenJPAVersion.MAJOR_RELEASE >= 2)) {
+            // Axway - Seeding the version isn't working in our build
+            // We know this is v2.1.1 or higher
+            // comment out the version checks, assume > 2.1.1
+            // if (((OpenJPAVersion.MAJOR_RELEASE == 1) &&
+            //     (OpenJPAVersion.MINOR_RELEASE >= 3)) ||
+            //    (OpenJPAVersion.MAJOR_RELEASE >= 2)) {
                 // should never get here, as parameter substitution should fail
                 fail("Test should have failed on OpenJPA 1.3 or above.");
-            } else {
-                // OpenJPA 1.2.x and earlier ignored unused parameters
-                assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees().size());
-                assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees().size());
-                assertSQL(".* AND t0.TYPE = .*");
-            }
-        } catch (ArgumentException ae) {
-            if ((OpenJPAVersion.MAJOR_RELEASE == 1) &&
-                 (OpenJPAVersion.MINOR_RELEASE >= 3)) {
-                // expected exception for new behavior
-            } else {
-                // unexpected exception
-                throw ae;
-            }
+            //} else {
+            //    // OpenJPA 1.2.x and earlier ignored unused parameters
+            //    assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees().size());
+            //    assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees().size());
+            //    assertSQL(".* AND t0.TYPE = .*");
+            //}
+//        } catch (ArgumentException ae) {
+//            if ((OpenJPAVersion.MAJOR_RELEASE == 1) &&
+//                 (OpenJPAVersion.MINOR_RELEASE >= 3)) {
+//                // expected exception for new behavior
+//            } else {
+//                // unexpected exception
+//                throw ae;
+//            }
         } catch (IllegalArgumentException iae) {
-            if (OpenJPAVersion.MAJOR_RELEASE >= 2) {
+//            if (OpenJPAVersion.MAJOR_RELEASE >= 2) {
                 // expected exception for new behavior
-            } else {
+//            } else {
                 // unexpected exception
-                throw iae;
-            }
+//                throw iae;
+//            }
         } finally {
             em.close();
         }

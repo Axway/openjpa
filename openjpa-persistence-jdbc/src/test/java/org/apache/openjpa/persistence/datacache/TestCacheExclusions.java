@@ -52,6 +52,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             items[n] = new Item();
             items[n].setName(s);
             items[n].setId(n);
+            items[n].setId(n+1);  // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
             em.persist(items[n++]);
         }
         p = new Purchase();

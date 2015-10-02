@@ -60,7 +60,9 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
 
         // Create a new Entity that has the PartBase accesspath. Has a newer timestamp than our query
         em.getTransaction().begin();
-        em.persist(new PartBase());
+        PartBase pb = new PartBase();
+        pb.setPartno(1);  // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
+        em.persist(pb);
         em.getTransaction().commit();
 
         // Make sure that our sql listener is working

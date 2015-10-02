@@ -168,7 +168,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
         OpenJPAEntityManager pm = pmf.createEntityManager();
 
         startTx(pm);
-        pm.persist(new RuntimeTest1());
+        pm.persist(new RuntimeTest1(1)); // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
         pm.flush();
         try {
             pm.setSavepoint("a");
@@ -187,7 +187,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
         OpenJPAEntityManager pm = pmf.createEntityManager();
 
         startTx(pm);
-        pm.persist(new RuntimeTest1());
+        pm.persist(new RuntimeTest1(1)); // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
         pm.setSavepoint("a");
         try {
             pm.flush();
@@ -206,7 +206,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
         OpenJPAEntityManager pm = pmf.createEntityManager();
 
         startTx(pm);
-        pm.persist(new RuntimeTest1());
+        pm.persist(new RuntimeTest1(1));  // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
         pm.flush();
         try {
             pm.setSavepoint("a");

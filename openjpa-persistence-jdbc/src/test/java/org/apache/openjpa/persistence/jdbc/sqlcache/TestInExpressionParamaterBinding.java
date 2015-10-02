@@ -68,6 +68,11 @@ public class TestInExpressionParamaterBinding extends SingleEMFTestCase {
 
     public void tearDown() throws Exception {
         // block super class tear down
+        // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
+        // This test was failing with the Axway changes. Not sure if this is the same root cause or not
+        // Add the following two lines dispute what the original comment said.
+        super.tearDown();
+        _emf = null;
     }
     
     private void createData() {

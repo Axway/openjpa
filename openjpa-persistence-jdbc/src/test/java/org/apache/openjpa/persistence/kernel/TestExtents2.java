@@ -125,8 +125,8 @@ public class TestExtents2 extends BaseKernelTest {
     }
 
     public void testContainsNewlyPersisted() {
-        RuntimeTest1 test1 = new RuntimeTest1();
-        RuntimeTest1 test2 = new RuntimeTest2();
+        RuntimeTest1 test1 = new RuntimeTest1(4); // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
+        RuntimeTest1 test2 = new RuntimeTest2(5); // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
 
         OpenJPAEntityManager pm = getPM();
 

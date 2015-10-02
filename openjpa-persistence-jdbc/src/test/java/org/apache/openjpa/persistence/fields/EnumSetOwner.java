@@ -49,6 +49,12 @@ public class EnumSetOwner {
         enumSetHolder = new EnumSetHolder(enumSet);
     }
 
+    /** FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
+     *  Added this method to allow a non-zero ID to be set at construction
+     * @param newId - The new id
+     */
+    public void setId(final int newId) { id = newId; }
+
     public static class EnumSetHolder {
 
         private final EnumSet<SampleEnum> enumSet;

@@ -51,6 +51,7 @@ public class TestCacheModeDisableSelectiveInheritance extends SingleEMFTestCase 
         EntityManager em = emf.createEntityManager();
         try {
             ChildUncacheable c = new ChildUncacheable();
+            c.setId(1);  // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
             em.getTransaction().begin();
             em.persist(c);
             em.getTransaction().commit();

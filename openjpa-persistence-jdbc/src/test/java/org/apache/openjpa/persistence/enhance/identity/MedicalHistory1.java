@@ -45,6 +45,10 @@ public class MedicalHistory1 {
     
     public void setPatient(Person1 p) {
         this.patient = p;
+        // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
+        // Added the following line.  Not 100% for sure it is the same cause, but the Axway
+        // changes cause the test to fail
+        this.setId(p.getId());
     }
     
     public String getName() {

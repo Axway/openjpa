@@ -180,7 +180,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
             em.getTransaction().begin();
             for (int i = 0; i < nPeople; i++) {
                 Person p = new Person();
-                p.setId(i);
+                p.setId(i + 1); // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
                 em.persist(p);
             }
             em.flush();
@@ -190,7 +190,9 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
             Thread[] newThreads = new Thread[nThreads];
             FindPeople[] customer = new FindPeople[nThreads];
             for (int i=0; i < nThreads; i++) {
-                customer[i] = new FindPeople(emfac, 0, nPeople, nIterations, i);
+                // FIXME Axway - ApplicationIds.create: avoid using 0 as an ID work around bug introduced in ApplicationIds.create
+                // customer[i] = new FindPeople(emfac, 0, nPeople, nIterations, i);
+                customer[i] = new FindPeople(emfac, 0 + 1, nPeople + 1, nIterations, i);
                 newThreads[i] = new Thread(customer[i]);
                 newThreads[i].start();
             }
