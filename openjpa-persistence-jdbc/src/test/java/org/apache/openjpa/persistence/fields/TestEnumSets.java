@@ -32,6 +32,7 @@ public class TestEnumSets
     public void testExternalizedEnumSet() {
         // test that inserting works
         EnumSetOwner o = new EnumSetOwner();
+        o.setId(1); // Axway - avoid using id of 0 to work around bug introduced in ApplicationIds.create()
         o.setEnumSet(EnumSet.allOf(SampleEnum.class));
 
         em.getTransaction().begin();

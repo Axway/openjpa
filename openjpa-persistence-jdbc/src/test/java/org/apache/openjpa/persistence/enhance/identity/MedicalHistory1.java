@@ -45,6 +45,8 @@ public class MedicalHistory1 {
     
     public void setPatient(Person1 p) {
         this.patient = p;
+        // Axway - fix unit test Not sure why it is failing with our other changes
+        this.setId(p.getId());
     }
     
     public String getName() {

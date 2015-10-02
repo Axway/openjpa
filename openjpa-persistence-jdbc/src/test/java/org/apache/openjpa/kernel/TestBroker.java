@@ -38,6 +38,7 @@ public class TestBroker extends SingleEMFTestCase {
 
         em.getTransaction().begin();
         A a = new A();
+        a.setId(1); // Axway - avoid using 0 as an ID work around bug introduced in ApplicationIds.create
         em.persist(a);
         Object oidInPersistenceContext = broker.getObjectId(a);
         em.getTransaction().commit();

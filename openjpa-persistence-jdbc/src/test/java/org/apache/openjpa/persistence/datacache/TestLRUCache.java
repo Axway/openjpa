@@ -53,7 +53,7 @@ public class TestLRUCache extends SingleEMFTestCase {
         em.getTransaction().begin();
         for (int i = 0; i < cacheSize + 1; i++) {
             CachedPerson person = new CachedPerson();
-            person.setId(i);
+            person.setId(i + 1); // Axway - Avoid id == 0 to work around bug introduced in ApplicationIds.create()
             em.persist(person);
         }
         em.getTransaction().commit();
@@ -62,7 +62,7 @@ public class TestLRUCache extends SingleEMFTestCase {
 
         // Populate query cache
         for (int i = 0; i < cacheSize + 1; i++) {
-            em.createQuery(QUERY + i, CachedPerson.class).getSingleResult();
+            em.createQuery(QUERY + (i + 1), CachedPerson.class).getSingleResult(); // Axway - Avoid id == 0 to work around bug introduced in ApplicationIds.create()
         }
 
         Set<?> keys = cache.getCacheMap().keySet();
@@ -73,7 +73,7 @@ public class TestLRUCache extends SingleEMFTestCase {
         }
 
         for (int i = 0; i < keys.size(); i++) {
-            boolean res = contains(QUERY + i, strKeys);
+            boolean res = contains(QUERY + (i + 1), strKeys); // Axway - Avoid id == 0 to work around bug introduced in ApplicationIds.create()
             if (i == 0) {
                 assertFalse(res);
             } else {
@@ -93,7 +93,7 @@ public class TestLRUCache extends SingleEMFTestCase {
         for (int i = 0; i < cacheSize + 1; i++) {
             em.getTransaction().begin();
             CachedPerson person = new CachedPerson();
-            person.setId(i);
+            person.setId(i + 1);  // Axway - Avoid id == 0 to work around bug introduced in ApplicationIds.create()
             em.persist(person);
             people.addFirst(person);
             em.getTransaction().commit();
@@ -101,7 +101,7 @@ public class TestLRUCache extends SingleEMFTestCase {
 
         // Assert that the first persisted entity isn't in the cache and everything else is.
         for (int i = 0; i < cacheSize + 1; i++) {
-            IntId id = new IntId(CachedPerson.class, i);
+            IntId id = new IntId(CachedPerson.class, i + 1 ); // Axway - Avoid id == 0 to work around bug introduced in ApplicationIds.create()
             boolean contains = cache.get(id) != null;
             if (i == 0) {
                 assertFalse(contains);

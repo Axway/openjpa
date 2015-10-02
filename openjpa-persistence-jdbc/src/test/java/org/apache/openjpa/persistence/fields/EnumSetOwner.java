@@ -49,6 +49,12 @@ public class EnumSetOwner {
         enumSetHolder = new EnumSetHolder(enumSet);
     }
 
+    /** Axway - need to allow id to be set so object doesn't default to 0 which causes
+     * a problem because of a bug introduced in ApplicationIds.create()
+     * @param newId - The new id
+     */
+    public void setId(final int newId) { id = newId; }
+
     public static class EnumSetHolder {
 
         private final EnumSet<SampleEnum> enumSet;

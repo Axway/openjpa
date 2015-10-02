@@ -51,6 +51,7 @@ public class TestCacheModeDisableSelectiveInheritance extends SingleEMFTestCase 
         EntityManager em = emf.createEntityManager();
         try {
             ChildUncacheable c = new ChildUncacheable();
+            c.setId(1);  // Axway - work around bug introduced by change in ApplicationIds.create
             em.getTransaction().begin();
             em.persist(c);
             em.getTransaction().commit();

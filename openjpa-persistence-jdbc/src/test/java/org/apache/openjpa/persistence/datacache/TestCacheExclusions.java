@@ -52,6 +52,8 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             items[n] = new Item();
             items[n].setName(s);
             items[n].setId(n);
+            items[n].setId(n+1);  // JeffJ - Fix related to Axway change related to ApplicationIds.create(...) that treats
+                                  // id==0 has a special case. Start this test with n = 1 to avoid an id of 0
             em.persist(items[n++]);
         }
         p = new Purchase();

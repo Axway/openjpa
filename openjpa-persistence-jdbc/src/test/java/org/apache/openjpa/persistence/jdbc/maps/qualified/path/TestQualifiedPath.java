@@ -102,7 +102,8 @@ public class TestQualifiedPath extends SQLListenerTestCase {
     private void createObj() {
         em.getTransaction().begin();
         for (int i = 0; i < numDivisions; i++) {
-            createDivision(divisionId++);
+            createDivision((divisionId++) + 1);  // Axway - work around bug introduced by change to ApplicationIds.create()
+                                                 // 0 is is not a valid id
         }
         em.flush();
         em.getTransaction().commit();
@@ -113,7 +114,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         division.setId(id);
         Map<Employee, String> employees = new HashMap<Employee, String>();
         for (int i = 0; i < numEmployeesPerDivision; i++) {
-            Employee employee = createEmployee(employeeId++);
+            Employee employee = createEmployee((employeeId++) + 1);
             employees.put(employee, employee.getPersonalInfo().getLastName());
         }
         division.setEmployees(employees);

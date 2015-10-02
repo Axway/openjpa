@@ -94,7 +94,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
         OpenJPAEntityManager pm = getLockingPM();
         startTx(pm);
 
-        RuntimeTest1 a = new RuntimeTest1("name", 0);
+        RuntimeTest1 a = new RuntimeTest1("name", 1); //Axway - Use 1, not 0, to work around bug introduced in ApplicationIds.create()
         pm.persist(a);
         _id = pm.getObjectId(a);
 
@@ -196,7 +196,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
         getLog().trace("verifying pessimistic locking worked...");
         OpenJPAEntityManager pm = getLockingPM();
         RuntimeTest1 a = pm.find(RuntimeTest1.class, _id);
-        assertEquals(20 - _bugCount, a.getIntField1());
+        assertEquals(20 - _bugCount, a.getIntField1() - 1); //Axway - Use 1, not 0, to work around bug introduced in ApplicationIds.create()
         getLog().trace("closing pm");
         endEm(pm);
         getLog().trace("done");

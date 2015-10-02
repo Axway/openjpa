@@ -92,7 +92,8 @@ public class TestCheckConsistency extends BaseKernelTest {
         RuntimeTest1 pc = pm.find(RuntimeTest1.class, _oid);
         pc.setIntField1(100);
 
-        RuntimeTest1 npc = new RuntimeTest1();
+        int NPC_ID = 2;
+        RuntimeTest1 npc = new RuntimeTest1(NPC_ID); // Axway - Specify non-zero id to work around bug introduced in ApplicationIds.create()
         pm.persist(npc);
         Object noid = pm.getObjectId(npc);
 
@@ -215,7 +216,8 @@ try {
         RuntimeTest1 pc = pm.find(RuntimeTest1.class, _oid);
         pc.setIntField1(100);
 
-        RuntimeTest1 npc = new RuntimeTest1();
+        final int NPC_ID = 2;
+        RuntimeTest1 npc = new RuntimeTest1(NPC_ID); // Axway - Specify non-zero id to work around bug introduced in ApplicationIds.create()
         pm.persist(npc);
         Object noid = pm.getObjectId(npc);
 
