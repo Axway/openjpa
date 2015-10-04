@@ -352,7 +352,9 @@ public class NuoDBDictionary extends DBDictionary
         fixedSizeTypeNameSet.addAll(Arrays.asList(
                 "CHARACTER", "CLOB","CHARACTER LARGE OBJECT","TEXT","STRING",
                 "BLOB", "BINARY", "VARBINARY"));
-        fixedSizeTypeNameSet.remove("NUMERIC");
+        fixedSizeTypeNameSet.remove(Arrays.asList(
+                "BIT", "BIGINT","DATE", "INTEGER", "SMALLINT", "TINYINT"
+                ));
 
         reservedWordSet.addAll(Arrays.asList("ALL", "AS", "BETWEEN", "BITS", "BOTH", "BREAK",
                 "BY", "CALL", "CASCADE", "CASE", "CATCH", "COLLATE", "COLUMN", "CONSTRAINT",
@@ -469,8 +471,17 @@ public class NuoDBDictionary extends DBDictionary
             case Types.SMALLINT:
                 result = Types.INTEGER;
                 break;
+            case Types.FLOAT:
+                result = Types.DOUBLE;
+                break;
             case Types.LONGNVARCHAR:
                 result = Types.VARCHAR;
+                break;
+            case Types.LONGVARBINARY:
+                result = Types.VARBINARY;
+                break;
+            case Types.SQLXML:
+                result = Types.CLOB;
                 break;
             default:
                 // No need to change type
