@@ -213,6 +213,7 @@ public class JDBCConfigurationImpl
             "jdatastore", org.apache.openjpa.jdbc.sql.JDataStoreDictionary.class.getName(),
             "mariadb", org.apache.openjpa.jdbc.sql.MariaDBDictionary.class.getName(),
             "mysql", org.apache.openjpa.jdbc.sql.MySQLDictionary.class.getName(),
+            "nuodb",org.apache.openjpa.jdbc.sql.NuoDBDictionary.class.getName(),
             "oracle", org.apache.openjpa.jdbc.sql.OracleDictionary.class.getName(),
             "pointbase", org.apache.openjpa.jdbc.sql.PointbaseDictionary.class.getName(),
             "postgres", org.apache.openjpa.jdbc.sql.PostgresDictionary.class.getName(),
