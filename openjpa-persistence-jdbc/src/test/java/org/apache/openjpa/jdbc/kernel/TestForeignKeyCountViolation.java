@@ -105,6 +105,10 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
     
     public void testFKNamefromDB()throws SQLException {
         
+        if (! _conf.getDBDictionaryInstance().supportsForeignKeys) {
+            return;
+        }
+
         EntityManager em = emf.createEntityManager();
         Table tableG = getMapping(EntityG.class).getTable();
         tableG.addForeignKey();
