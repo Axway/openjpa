@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.NuoDBDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.Address;
@@ -169,7 +170,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         // b10759/sql_elements005.htm#sthref511
         DBDictionary dict = ((JDBCConfiguration) getEmf().getConfiguration())
             .getDBDictionaryInstance();
-        if (dict instanceof OracleDictionary) {
+        if (dict instanceof OracleDictionary || dict instanceof NuoDBDictionary) {
             assertTrue(user.getName() == null ||
                 "".equals(user.getName()));
         } else if (dict instanceof SybaseDictionary) {
