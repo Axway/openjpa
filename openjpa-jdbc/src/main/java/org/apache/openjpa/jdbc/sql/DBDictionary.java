@@ -233,6 +233,10 @@ public class DBDictionary
     public String forUpdateClause = "FOR UPDATE";
     public String tableForUpdateClause = null;
     public String distinctCountColumnSeparator = null;
+    /** True if DB supports ANY, ALL, SOME keywords. NuoDB doesn't support.
+     * Some tests that use JPQL need to be modified to use altnerate query
+     */
+    public boolean supportsAnyAllSome = true;
     public boolean supportsSelectForUpdate = true;
     public boolean supportsLockingWithDistinctClause = true;
     public boolean supportsLockingWithMultipleTables = true;
@@ -5494,7 +5498,13 @@ public class DBDictionary
     public void setDelimitIdentifiers(boolean delimitIds) {
         delimitIdentifiers = delimitIds;
     }
-    
+
+    /**
+     * @return supportsAnyAllSome
+     */
+    public boolean getSupportsAnyAllSome() {
+        return supportsAnyAllSome;
+    }
     /**
      * @return supportsXMLColumn
      */

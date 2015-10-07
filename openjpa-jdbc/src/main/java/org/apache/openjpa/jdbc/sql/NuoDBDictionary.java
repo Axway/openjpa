@@ -58,6 +58,7 @@ public class NuoDBDictionary extends DBDictionary
 //        public int maxConstraintNameLength = 128;
 //        public int maxIndexNameLength = 128;
 //        public int maxIndexesPerTable = Integer.MAX_VALUE;
+        supportsAnyAllSome = false;
 //        public boolean supportsForeignKeys = true;
         supportsForeignKeys = /*true;*/ false; // support DDL but not DML
 //        public boolean supportsParameterInSelect = true;
