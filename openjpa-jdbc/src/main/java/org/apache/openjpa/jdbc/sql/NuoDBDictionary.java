@@ -261,9 +261,9 @@ public class NuoDBDictionary extends DBDictionary
         supportsAutoAssign = true;
         lastGeneratedKeyQuery =   "SELECT LAST_INSERT_ID() FROM DUAL";
         nextSequenceQuery = "SELECT NEXT VALUE FOR {0} FROM DUAL";
-        sequenceSQL = "SELECT SCHEMA,SEQUENCENAME FROM SYSTEM.SEQUENCES";
-        //sequenceSchemaSQL = "SCHEMA = ?";
-        //sequenceNameSQL = "SEQUENCENAME = ?";
+        sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA ,SEQUENCENAME AS SEQUENCE_NAME FROM SYSTEM.SEQUENCES";
+        sequenceSchemaSQL = "SCHEMA = ?";
+        sequenceNameSQL = "SEQUENCENAME = ?";
 //        // most native sequences can be run inside the business transaction
 //        public int nativeSequenceType= Seq.TYPE_CONTIGUOUS;
         nativeSequenceType= Seq.TYPE_DEFAULT;
@@ -557,6 +557,27 @@ public class NuoDBDictionary extends DBDictionary
         return super.getAlterSequenceSQL(seq);
     }
 
+    @Override
+    protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName),
+                DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
+        StringBuilder buf = new StringBuilder();
+        buf.append(sequenceSQL);
+        if (!DBIdentifier.isNull(schemaName) || !DBIdentifier.isNull(sequenceName))
+            buf.append(" WHERE ");
+        if (!DBIdentifier.isNull(schemaName)) {
+            buf.append(sequenceSchemaSQL);
+            if (!DBIdentifier.isNull(sequenceName))
+                buf.append(" AND ");
+        }
+        if (!DBIdentifier.isNull(sequenceName))
+            buf.append(sequenceNameSQL);
+        return buf.toString();
+    }
     @Override
     public String getTypeName(Column col) {
         String typeName=super.getTypeName(col);
