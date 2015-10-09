@@ -91,7 +91,7 @@ public class NuoDBDictionary extends DBDictionary
 //        public boolean fullResultCollectionInOrderByRelation = false;
 //
 //        // sql
-//        public boolean disableAlterSeqenceIncrementBy=false;
+        disableAlterSeqenceIncrementBy=true;
         validationSQL = "SELECT NOW() FROM DUAL";
 //        public String closePoolSQL = null;
 //        public String initializationSQL = null;
@@ -124,7 +124,7 @@ public class NuoDBDictionary extends DBDictionary
 //        public boolean requiresTargetForDelete = false;
 //        public boolean allowsAliasInBulkClause = true;
 //        public boolean supportsMultipleNontransactionalResultSets = true;
-//        public boolean requiresSearchStringEscapeForLike = false;
+        requiresSearchStringEscapeForLike = true;
 //        public String searchStringEscape = "\\";
 //        public boolean requiresCastForMathFunctions = false;
 //        public boolean requiresCastForComparisons = false;
@@ -261,13 +261,19 @@ public class NuoDBDictionary extends DBDictionary
         autoAssignTypeName = "BIGINT";
         supportsAutoAssign = true;
         lastGeneratedKeyQuery =   "SELECT LAST_INSERT_ID() FROM DUAL";
-        nextSequenceQuery = "SELECT NEXT VALUE FOR {0} FROM DUAL";
-        sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA ,SEQUENCENAME AS SEQUENCE_NAME FROM SYSTEM.SEQUENCES";
-        sequenceSchemaSQL = "SCHEMA = ?";
-        sequenceNameSQL = "SEQUENCENAME = ?";
+        // NuoDB doesn't support increment by on sequences.
+        // This causes some problems in NativeJDBCSeq that defaults to allocating 50 at a time
+        // Will likely need a custom implementation to deal with the fact that increment by
+        // isn't supported.
+        // Leaving disabled for now
+//        nextSequenceQuery = "SELECT NEXT VALUE FOR {0} FROM DUAL";
+//        nextSequenceQuery = null;
+//        sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA ,SEQUENCENAME AS SEQUENCE_NAME FROM SYSTEM.SEQUENCES";
+//        sequenceSchemaSQL = "SCHEMA = ?";
+//        sequenceNameSQL = "SEQUENCENAME = ?";
 //        // most native sequences can be run inside the business transaction
 //        public int nativeSequenceType= Seq.TYPE_CONTIGUOUS;
-        nativeSequenceType= Seq.TYPE_DEFAULT;
+//        nativeSequenceType= Seq.TYPE_DEFAULT;
 //
 //        /**
 //         * This variable was used in 2.1.x and prior releases to indicate that
@@ -336,7 +342,6 @@ public class NuoDBDictionary extends DBDictionary
 //        public int batchLimit = NO_BATCH;
 
         platform = "NuoDB";
-        requiresSearchStringEscapeForLike = false;
         useSetBytesForBlobs = true;
         useGetBytesForBlobs = true;
         useSetStringForClobs = true;
@@ -531,6 +536,9 @@ public class NuoDBDictionary extends DBDictionary
         String _pk = "DROP INDEX \"" + getFullName(pk.getTable(), false) + "\"";
         return new String[] { _pk };
     }
+/* TODO NuoDB doesn't support the increment by option.  Likely need to create
+custom implementatino of NativeJDBCSeq to handle this so that increment is always 1 and
+allocate is always 1
 
     @Override
     public String[] getDropSequenceSQL(Sequence seq) {
@@ -579,6 +587,7 @@ public class NuoDBDictionary extends DBDictionary
             buf.append(sequenceNameSQL);
         return buf.toString();
     }
+*/
     @Override
     public String getTypeName(Column col) {
         String typeName=super.getTypeName(col);
