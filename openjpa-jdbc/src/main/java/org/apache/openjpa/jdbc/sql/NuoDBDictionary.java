@@ -22,11 +22,7 @@ package org.apache.openjpa.jdbc.sql;
     import org.apache.openjpa.jdbc.identifier.DBIdentifier;
     import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
     import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
-    import org.apache.openjpa.jdbc.schema.Table;
-    import org.apache.openjpa.jdbc.schema.Column;
-    import org.apache.openjpa.jdbc.schema.Sequence;
-    import org.apache.openjpa.jdbc.schema.ForeignKey;
-    import org.apache.openjpa.jdbc.schema.PrimaryKey;
+    import org.apache.openjpa.jdbc.schema.*;
     import org.apache.openjpa.jdbc.sql.DBDictionary;
     import org.apache.openjpa.jdbc.sql.SQLBuffer;
     import org.apache.openjpa.kernel.Seq;
@@ -499,6 +495,27 @@ public class NuoDBDictionary extends DBDictionary
         buf.append(")");
     }
 
+    /** NuoDB uses a different syntax to specify that a column is
+     * unique.  Use  'UNIQUE ( colName )'  to indicate uniqueness w/o creating an index
+     * OpenJPA will create an index later if necessary. The default implementation
+     * provided by DBDictionary is accepted by NuoDB even though it isn't documented but
+     * it creates and index and behaves like 'UNIQUE KEY indexname ( colName)'.
+     * This creates a problem because OpenJPA will attempt to create another index on
+     * colName and NuoDB doesn't like having multiple indexes on the same column.
+     */
+    @Override
+    protected String getUniqueConstraintSQL(Unique unq) {
+        StringBuilder buf = new StringBuilder();
+        if (!DBIdentifier.isNull(unq.getIdentifier())) {
+            buf.append("UNIQUE KEY ");
+            buf.append(unq.getIdentifier());
+            buf.append(" (");
+            buf.append(getNamingUtil().appendColumns(unq.getColumns()));
+            buf.append(") ");
+        }
+        return buf.toString();
+    }
+
     // ALTER TABLE <tablename> DROP FOREIGN KEY (<col1>,...) REFRENCES <tablename>
     @Override
     public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
@@ -620,5 +637,42 @@ allocate is always 1
         return state;
     }
 
+    @Override
+    public boolean needsToCreateIndex(Index idx, Table table, Unique[] uniques) {
+        // NuoDB will automatically create a unique index for the
+        // constraint, so don't create another index again
+        PrimaryKey pk = table.getPrimaryKey();
+        if (pk != null && idx.columnsMatch(pk.getColumns()))
+            return false;
+
+        // If there aren't any unqiques, then we need to create the index
+        if (uniques == null || uniques.length == 0) {
+            return true;
+        }
+
+        // If table has constraints on column (a), an explicit index on (a)
+        // will cause duplicate index error from NuoDB
+        Column[] icols = idx.getColumns();
+        boolean isDuplicate = false;
+        for (int i = 0; i < uniques.length; i++) {
+            Column[] ucols = uniques[i].getColumns();
+            // If the have the same number of columns, they could be duplicates
+            if (icols.length == ucols.length) {
+                // now compare columns
+                boolean match = true;
+                for (int j = 0; j < icols.length && match; j++) {
+                    if (!icols[j].getQualifiedPath().equals(ucols[j].getQualifiedPath())) {
+                        match = false;
+                    }
+                }
+                // We have a match, no need to create the index
+                if (match) {
+                    return false;
+                }
+            }
+        }
+        // didn't find a match, need to create the index
+        return true;
+    }
 
 }
