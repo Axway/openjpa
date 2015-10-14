@@ -80,7 +80,8 @@ public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestC
     }
 
     private String getUniqueConstraint(String unique) {
-        if (dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary) {
+        if (dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary ||
+                "NuoDB".equals(dict.platform)) {
             //CREATE TABLE N_UNIQUE_A (aid INTEGER NOT NULL, f1 INTEGER NOT NULL, f2 INTEGER NOT NULL, 
             //f3 INTEGER NOT NULL, f4 INTEGER NOT NULL, f5 INTEGER, f6 INTEGER, PRIMARY KEY (aid), 
             //UNIQUE U_N_UNQU__F1 (f1), 
