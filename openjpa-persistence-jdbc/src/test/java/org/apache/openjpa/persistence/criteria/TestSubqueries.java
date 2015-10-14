@@ -67,7 +67,9 @@ public class TestSubqueries extends CriteriaTest {
     }
 
     public void testAny() {
-        String query = "SELECT o.name FROM CompUser o " 
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
+        String query = "SELECT o.name FROM CompUser o "
                      + "WHERE o.address.zipCode = "
                      + " ANY (SELECT s.computerName " 
                      + " FROM CompUser s WHERE s.address.country IS NOT NULL)";
@@ -319,6 +321,8 @@ public class TestSubqueries extends CriteriaTest {
     }
 
     public void testSubquery13() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String query = "select o1.id, c.name from Order o1, Customer c"
                 + " where o1.quantity = "
                 + " any(select o2.quantity from in(c.orders) o2)";
