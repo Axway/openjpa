@@ -82,7 +82,7 @@
         <mysql.version>5.1.12</mysql.version>
         <postgresql.version>8.4-701.jdbc3</postgresql.version>
         <nuodb.version>2.3.1</nuodb.version>
-        <openjpa.nuodb.url>jdbc:com.nuodb://localhost/openjpa?schema=test&amp;isolation=read_committed</openjpa.nuodb.url>
+        <openjpa.nuodb.url>jdbc:com.nuodb://localhost:48004/openjpa2?schema=test&amp;isolation=read_committed</openjpa.nuodb.url>
         <openjpa.nuodb.schema>test</openjpa.nuodb.schema>
         <openjpa.nuodb.username>dba</openjpa.nuodb.username>
         <openjpa.nuodb.password>dba</openjpa.nuodb.password>
@@ -96,7 +96,7 @@
         <compile.testclass.target>${java.testclass.version}</compile.testclass.target>
 
         <maven.javadoc.version>2.9.1</maven.javadoc.version>
-        <maven.surefire.version>2.17</maven.surefire.version>
+        <maven.surefire.version>2.18.1</maven.surefire.version>
     </properties>
 
     <licenses>
