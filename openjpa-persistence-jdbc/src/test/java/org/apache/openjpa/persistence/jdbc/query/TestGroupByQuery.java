@@ -64,9 +64,17 @@ public class TestGroupByQuery extends SingleEMFTestCase {
 	}
 
 	public void testGroupBy() {
-		String jpql = "SELECT g.name, g.nTile FROM Scrabble g WHERE "
-                + "(g.name = ANY(SELECT g1.name FROM Scrabble g1 "
-				+ "GROUP BY g1.name )) ORDER BY g.name";
+		String jpql;
+		if (getDBDictionary().getSupportsAnyAllSome()) {
+			jpql = "SELECT g.name, g.nTile FROM Scrabble g WHERE "
+					+ "(g.name = ANY(SELECT g1.name FROM Scrabble g1 "
+					+ "GROUP BY g1.name )) ORDER BY g.name";
+		} else {
+			jpql = "SELECT g.name, g.nTile FROM Scrabble g WHERE "
+					+ "(g.name IN (SELECT g1.name FROM Scrabble g1 "
+					+ "GROUP BY g1.name )) ORDER BY g.name";
+
+		}
 		EntityManager em = emf.createEntityManager();
 
         List<IndoorGame> employees = em.createQuery(jpql).getResultList();
