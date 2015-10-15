@@ -488,7 +488,15 @@ public class DataCacheStoreManager
         DataCachePCData data = cache.get(sm.getObjectId());
         boolean alreadyCached = data != null;
 
-        if ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached) ||
+        // Todo - open jpa bug.  It should be checking if alreadyCached is true, not false.  Comment below
+        // didn't match what the code was actually doing.  The condition below used to read:
+        //
+        // if ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached)
+        //
+        // I removed the "!alreadyCached" and changed it do "alreadyCached" (Bob K)
+        // Note: (JeffJ) v2.4.1 (and maybe earlier) has changed this method. This issue might be fixed in
+        // versions after 2.1.x
+        if ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && alreadyCached) ||
              fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
             // If not found in the DB and the item is in the cache, and not locking remove the item
             if (!found && data != null && !isLocking(fetch)) {
