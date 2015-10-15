@@ -6,4 +6,4 @@ velocity.log
 derby.log
 *.iml
 .idea
-.idea
+openjpa-tools/openjpa-fetch-statistics-was/dependency-reduced-pom.xml
