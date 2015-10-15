@@ -721,6 +721,8 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testSubqueries3() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL ("
             + "SELECT m.salary FROM Manager m WHERE m.department = "
             + "emp.department)";
@@ -752,6 +754,8 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testSubqueries5() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
             + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
         CriteriaQuery<Order> q = cb.createQuery(Order.class);
@@ -768,6 +772,8 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testSubqueries6() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT a.balance FROM c.accounts a)";
         CriteriaQuery<Order> q = cb.createQuery(Order.class);

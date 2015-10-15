@@ -105,6 +105,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries3() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL ("
             + "SELECT m.salary FROM Manager m WHERE m.department = "
             + "emp.department)";
@@ -296,6 +298,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries5() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
             + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
         String expectedSQL = "SELECT t3.id, t3.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
@@ -325,6 +329,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries5a() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o WHERE o.name = SOME ("
             + "SELECT a.name FROM o.customer c JOIN c.accounts a)";
         String expectedSQL = "SELECT t3.id, t3.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
@@ -354,6 +360,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries6() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT a.balance FROM c.accounts a)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
@@ -383,6 +391,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries6a() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE o.name = "
             + "SOME (SELECT a.name FROM c.accounts a)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
@@ -412,6 +422,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries6b() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE o.name = "
             + "SOME (SELECT a.county FROM c.address a)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t3.id, t3.accountNum, t4.id, t4.city, t4.country, t4.county, "
@@ -440,6 +452,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries6c() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a JOIN a.user u)";
 
@@ -471,6 +485,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries6d() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a1 JOIN a1.user u WHERE a.city = a1.city)";
         String expectedSQL = "SELECT t2.id, t2.cnt, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, "
@@ -504,6 +520,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries6e() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
 
@@ -536,6 +554,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries6f() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address.user u)";
 
@@ -555,6 +575,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubqueries6g() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a JOIN a.user u)";
 
@@ -589,6 +611,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     // redundant t3
     // compare to 6e, t3 should be in main query for LEFT OUTER JOIN
     public void testSubqueries6h() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t1.id, t1.accountNum, t6.id, t6.city, t6.country, t6.county, "
@@ -736,6 +760,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testAny() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o.name FROM CompUser o "
             + "WHERE o.address.zipCode = ANY (SELECT s.computerName "
             + " FROM CompUser s WHERE s.address.country IS NOT NULL)";
@@ -1082,6 +1108,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testSubquery13() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select o1.id, c.name from Order o1, Customer c"
             + " where o1.quantity = "
             + " any(select o2.quantity from in(c.orders) o2)";
@@ -1654,6 +1682,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     public void testPluralCorrelatedJoin3() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.accounts a WHERE 10000 < "
             + "ANY (SELECT a1.balance FROM Account a1 WHERE a.owner = a1.owner)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t6.id, t6.accountNum, t7.id, t7.city, "
@@ -1689,7 +1719,9 @@ public class TestJPQLSubquery extends CriteriaTest {
     }    
 
     public void testPluralCorrelatedJoin4() {
-        String jpql = 
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
+        String jpql =
         "SELECT o.quantity FROM Order o JOIN o.customer c JOIN c.accounts a JOIN a.owner owner WHERE 10000 < "
         + "ANY (SELECT a1.balance FROM Account a1 JOIN a1.owner owner1 WHERE owner.name = owner1.name)";
         String expectedSQL = "SELECT t0.quantity FROM CR_ODR t0 "
@@ -1721,6 +1753,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     }    
 
     public void testPluralCorrelatedJoin5() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o.quantity FROM Order o JOIN o.customer c JOIN c.accounts a WHERE c.name = "
             + "ANY (SELECT owner.name FROM a.owner owner WHERE owner.id = 1)";
         String expectedSQL = "SELECT t0.quantity FROM CR_ODR t0 "

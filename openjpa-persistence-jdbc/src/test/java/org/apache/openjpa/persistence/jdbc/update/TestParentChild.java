@@ -25,6 +25,8 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.CombinatorialPersistenceTestCase;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+
 
 /**
  * Tests for SQL statement ordering capabilities of different update strategies
@@ -63,169 +65,173 @@ import org.apache.openjpa.persistence.test.CombinatorialPersistenceTestCase;
  * 
  */
 public class TestParentChild extends CombinatorialPersistenceTestCase {
-	// Each of these property keys can take multiple possible values 
-	private static String Key_UpdateManager = "openjpa.jdbc.UpdateManager";
-	private static String Key_SchemaFactory = "openjpa.jdbc.SchemaFactory";
+    // Each of these property keys can take multiple possible values 
+    private static String Key_UpdateManager = "openjpa.jdbc.UpdateManager";
+    private static String Key_SchemaFactory = "openjpa.jdbc.SchemaFactory";
     private static String Key_MappingDefaults = "openjpa.jdbc.MappingDefaults";
-	private static String Key_PersistOrder = "persist-order";
+    private static String Key_PersistOrder = "persist-order";
 
-	private static String[] Option_MappingDefaults = {
+    private static String[] Option_MappingDefaults = {
         "ForeignKeyDeleteAction=restrict, JoinForeignKeyDeleteAction=restrict",
         "ForeignKeyDeleteAction=none, JoinForeignKeyDeleteAction=none" };
-	
-	private static String[] Option_SchemaFactory = {
-		"native(ForeignKeys=false)", 
-		"native(ForeignKeys=true)" };
+    
+    private static String[] Option_SchemaFactory = {
+        "native(ForeignKeys=false)", 
+        "native(ForeignKeys=true)" };
 
-	private static String[] Option_UpdateManager = { 
-		"operation-order",
-		"constraint" };
-	
-	private static enum PersistOrder {
-		IMPLICIT_CASCADE, 
-		CHILD_THEN_PARENT, 
-		PARENT_THEN_CHILD
-	};
+    private static String[] Option_UpdateManager = { 
+        "operation-order",
+        "constraint" };
+    
+    private static enum PersistOrder {
+        IMPLICIT_CASCADE, 
+        CHILD_THEN_PARENT, 
+        PARENT_THEN_CHILD
+    };
 
 
-	// The options are added in a static block, so that we can count on
-	// total number of combinations before the test is set up.
-	static {
+    // The options are added in a static block, so that we can count on
+    // total number of combinations before the test is set up.
+    static {
         getHelper().addOption(Key_MappingDefaults, Option_MappingDefaults);
-		getHelper().addOption(Key_SchemaFactory, Option_SchemaFactory);
-		getHelper().addOption(Key_UpdateManager, Option_UpdateManager);
+        getHelper().addOption(Key_SchemaFactory, Option_SchemaFactory);
+        getHelper().addOption(Key_UpdateManager, Option_UpdateManager);
 
-		// The last argument tells that this is a runtime option. So the
-		// values are included to generate combinations but are excluded
-		// from generating OpenJPA configuration.
+        // The last argument tells that this is a runtime option. So the
+        // values are included to generate combinations but are excluded
+        // from generating OpenJPA configuration.
         getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
-	}
+    }
 
-	public void setUp() {
+    public void setUp() {
         // The options can also be added in setup() as well but then 
         // coutTestCase() will only record test methods and not multiply them
         // with number of configuration combinations the same tests will run.
         getHelper().addOption(Key_MappingDefaults, Option_MappingDefaults);
-		getHelper().addOption(Key_SchemaFactory, Option_SchemaFactory);
-		getHelper().addOption(Key_UpdateManager, Option_UpdateManager);
+        getHelper().addOption(Key_SchemaFactory, Option_SchemaFactory);
+        getHelper().addOption(Key_UpdateManager, Option_UpdateManager);
 
         getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
-		
-		sql.clear();
-		super.setUp(DROP_TABLES, Parent.class, Child.class);
-	}
+        
+        sql.clear();
+        super.setUp(DROP_TABLES, Parent.class, Child.class);
+    }
 
-	/**
+    /**
      * This test will run in 2*2*2*3 = 24 times with different configurations.
-	 */
-	public void testInsert() {
-		Parent parent = createData(getPersistOrder(), 3);
-		validateData(parent.getId(), 3);
+     */
+    public void testInsert() {
+        Parent parent = createData(getPersistOrder(), 3);
+        validateData(parent.getId(), 3);
 
         // verification can be challenging under multiple configuration options
         // see the methods as exemplars how verification can vary based on
-		// configuration.
-		assertLogicalOrPhysicalForeignKey();
-		assertPhysicalForeignKeyCreation();
-	}
+        // configuration.
+        assertLogicalOrPhysicalForeignKey();
+        JDBCConfiguration _conf = (JDBCConfiguration) emf.getConfiguration();
+        if (_conf.getDBDictionaryInstance().supportsForeignKeys) {
+            assertPhysicalForeignKeyCreation();
+        }
+    }
 
-	Parent createData(PersistOrder order, int nChild) {
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
+    Parent createData(PersistOrder order, int nChild) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
 
-		Parent parent = new Parent();
-		parent.setName("parent");
-		for (int i = 1; i <= nChild; i++)
-			parent.newChild("Child-" + i);
-		switch (order) {
-		case IMPLICIT_CASCADE:
-			em.persist(parent);
-			break;
-		case CHILD_THEN_PARENT:
-			for (Child child : parent.getChildren()) {
-				em.persist(child);
-			}
-			em.persist(parent);
-			break;
-		case PARENT_THEN_CHILD:
-			em.persist(parent);
-			for (Child child : parent.getChildren()) {
-				em.persist(child);
-			}
-			break;
-		default:
-			throw new RuntimeException("Bad order " + order);
-		}
-		em.getTransaction().commit();
-		em.clear();
-		return parent;
-	}
+        Parent parent = new Parent();
+        parent.setName("parent");
+        for (int i = 1; i <= nChild; i++)
+            parent.newChild("Child-" + i);
+        switch (order) {
+        case IMPLICIT_CASCADE:
+            em.persist(parent);
+            break;
+        case CHILD_THEN_PARENT:
+            for (Child child : parent.getChildren()) {
+                em.persist(child);
+            }
+            em.persist(parent);
+            break;
+        case PARENT_THEN_CHILD:
+            em.persist(parent);
+            for (Child child : parent.getChildren()) {
+                em.persist(child);
+            }
+            break;
+        default:
+            throw new RuntimeException("Bad order " + order);
+        }
+        em.getTransaction().commit();
+        em.clear();
+        return parent;
+    }
 
-	void validateData(Object pid, int childCount) {
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		Parent parent = em.find(Parent.class, pid);
-		assertNotNull(parent);
-		assertEquals(childCount, parent.getChildren().size());
-		em.getTransaction().rollback();
-	}
-	
-	/**
-	 * Asserts that foreign key constraint will be defined on the database
-	 * for certain combinations of configurations.
-	 */
-	void assertPhysicalForeignKeyCreation() {
+    void validateData(Object pid, int childCount) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Parent parent = em.find(Parent.class, pid);
+        assertNotNull(parent);
+        assertEquals(childCount, parent.getChildren().size());
+        em.getTransaction().rollback();
+    }
+    
+    /**
+     * Asserts that foreign key constraint will be defined on the database
+     * for certain combinations of configurations.
+     */
+    void assertPhysicalForeignKeyCreation() {
         String regex = "ALTER TABLE .* ADD FOREIGN KEY \\(PARENT_ID\\) "
-		             + "REFERENCES Parent \\(id\\)(\\sDEFERRABLE)?";
-		if (getMappingDefaults().contains("restrict")) {
-			assertSQL(regex);
-		} else {
-			assertNotSQL(regex);
-		}
-	}
+                     + "REFERENCES Parent \\(id\\)(\\sDEFERRABLE)?";
+        if (getMappingDefaults().contains("restrict")) {
+            assertSQL(regex);
+        } else {
+            assertNotSQL(regex);
+        }
+    }
 
-	/**
-	 * Asserts that update SQL will be issued to set the foreign key value
-	 * after the insert under some configuration.
-	 */
-	void assertPostInsertUpdate() {
-		if (getPersistOrder().equals(PersistOrder.CHILD_THEN_PARENT)
-			&& getMappingDefaults().contains("restrict")) {
-			assertSQL("UPDATE .* SET PARENT_ID .* WHERE .*");
-		}
-	}
-	
-	/**
-	 * Asserts that foreign key will be logical or physical under different 
-	 * combination of configuration.
-	 */
-	void assertLogicalOrPhysicalForeignKey() {
-		ForeignKey fk = getChildParentForeignKey();
+    /**
+     * Asserts that update SQL will be issued to set the foreign key value
+     * after the insert under some configuration.
+     */
+    void assertPostInsertUpdate() {
+        if (getPersistOrder().equals(PersistOrder.CHILD_THEN_PARENT)
+            && getMappingDefaults().contains("restrict")) {
+            assertSQL("UPDATE .* SET PARENT_ID .* WHERE .*");
+        }
+    }
+    
+    /**
+     * Asserts that foreign key will be logical or physical under different 
+     * combination of configuration.
+     */
+    void assertLogicalOrPhysicalForeignKey() {
+        ForeignKey fk = getChildParentForeignKey();
         boolean physicalKeyExists = getMappingDefaults().contains("restrict");
         boolean keyRead = getSchemaFactory().contains("ForeignKeys=true");
-		if (physicalKeyExists && keyRead)
-			assertFalse(fk.isLogical());
-		else if (keyRead)
-			assertTrue(fk.isLogical());
-	}
-	
-	ForeignKey getChildParentForeignKey() {
-		MetaDataRepository repos = emf.getConfiguration()
-				.getMetaDataRepositoryInstance();
-		ClassMetaData child = repos.getCachedMetaData(Child.class);
-		FieldMapping parent = (FieldMapping) child.getField("parent");
-		return parent.getForeignKey();
-	}
+        JDBCConfiguration _conf = (JDBCConfiguration) emf.getConfiguration();
+        if (physicalKeyExists && keyRead &&  _conf.getDBDictionaryInstance().supportsForeignKeys)
+            assertFalse(fk.isLogical());
+        else if (keyRead)
+            assertTrue(fk.isLogical());
+    }
+    
+    ForeignKey getChildParentForeignKey() {
+        MetaDataRepository repos = emf.getConfiguration()
+                .getMetaDataRepositoryInstance();
+        ClassMetaData child = repos.getCachedMetaData(Child.class);
+        FieldMapping parent = (FieldMapping) child.getField("parent");
+        return parent.getForeignKey();
+    }
 
-	PersistOrder getPersistOrder() {
-		return (PersistOrder) getHelper().getOption(Key_PersistOrder);
-	}
+    PersistOrder getPersistOrder() {
+        return (PersistOrder) getHelper().getOption(Key_PersistOrder);
+    }
 
-	String getMappingDefaults() {
-		return getHelper().getOptionAsString(Key_MappingDefaults);
-	}
+    String getMappingDefaults() {
+        return getHelper().getOptionAsString(Key_MappingDefaults);
+    }
 
-	String getSchemaFactory() {
-		return getHelper().getOptionAsString(Key_SchemaFactory);
-	}
+    String getSchemaFactory() {
+        return getHelper().getOptionAsString(Key_SchemaFactory);
+    }
 }

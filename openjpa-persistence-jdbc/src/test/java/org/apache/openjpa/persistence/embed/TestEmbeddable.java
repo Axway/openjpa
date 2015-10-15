@@ -1887,26 +1887,30 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " order by e.intVal3",
             */
         };
+
         String[] query2 = {
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 < " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ANY (select e2.intVal2 " : " (select MAX(e2.intVal2) ") +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 < " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ANY (select e2.intVal2 " : " (select MAX(e2.intVal2) ") +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME " +
-                " (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "SOME (select e2.intVal2 " : " (select MAX(e2.intVal2) ") +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 > " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ALL (select e2.intVal2 " : " (select MAX(e2.intVal2) ") +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
                 " order by e.intVal3",
             // non-corelated subquery:
@@ -1915,23 +1919,26 @@ public class TestEmbeddable extends SQLListenerTestCase {
             //       but generated corelated subquery.
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 < ANY (select e.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 < " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ANY (select e.intVal2 " : " (select MAX(e.intVal2) ") +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 < ALL (select e.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 < " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ALL (select e.intVal2 " : " (select MIN(e.intVal2) ") +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME " +
-                " (select e.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "SOME (select e.intVal2 " : " (select MAX(e.intVal2) ") +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 > ALL (select e.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 > " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ALL (select e.intVal2 " : " (select MAX(e.intVal2) ") +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3",
             // corelated subquery:
@@ -1940,23 +1947,26 @@ public class TestEmbeddable extends SQLListenerTestCase {
             //       but generated non-corelated subquery.
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 < " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ANY (select e2.intVal2 " : " (select MAX(e2.intVal2) ") +
                 " from in(a.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 < " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ALL (select e2.intVal2 " : " (select MIN(e2.intVal2) ") +
                 " from a.embeds e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME " +
-                " (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "SOME (select e2.intVal2 " : " (select MAX(e2.intVal2) ") +
                 " from in(a.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 > " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ALL (select e2.intVal2 " : " (select MAX(e2.intVal2) ") +
                 " from a.embeds e2) " +
                 " order by e.intVal3",
         };
@@ -2043,7 +2053,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
             "select e, a from " +
                 " EntityA_Embed_Coll_Embed a " +
                 " , in (a.embed.embeds) e " +
-                " where e.intVal1 = SOME " +
+                " where e.intVal1 " +
+                    (getDBDictionary().getSupportsAnyAllSome() ?  "= SOME " : " IN ") +
                 " (select e2.intVal1 from " +
                 " EntityA_Embed_Coll_Embed a2 " +
                 " , in (a2.embed.embeds) e2) " +
@@ -2432,12 +2443,14 @@ public class TestEmbeddable extends SQLListenerTestCase {
             "select d from Department1 d join d.empMap e" +
                 " where d.deptId = KEY(e) order by d",
             "select d from Department1 d " +
-                " where d.deptId < ANY " +
-                " (select KEY(e) from in(d.empMap) e) " +
+                " where d.deptId < " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "ANY (select KEY(e)" : "(select MAX(KEY(e))") +
+                    " from in(d.empMap) e) " +
                 " order by d",
             "select d from Department1 d " +
-                " where d.deptId < SOME " +
-                " (select KEY(e) from Department1 d1, in(d1.empMap) e) " +
+                " where d.deptId < " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? "SOME (select KEY(e)" : " (select MAX(KEY(e)) ") +
+                " from Department1 d1, in(d1.empMap) e) " +
                 " order by d",
         };
         for (int i = 0; i < query.length; i++) {
@@ -2611,10 +2624,29 @@ public class TestEmbeddable extends SQLListenerTestCase {
             keySet().toArray()[0];
         String imageKey3 = (String) is3.get(0).getImages().
             keySet().toArray()[0];
+
+        // TODO NuoDB and OpenJPA bug. NuoDB doesn't support any, all, or some.
+        // Need to rewrite query to use the IN syntax if any, all, and some are not supported
+        // OpenJPA has a parse error when using IN. Should be legal as far as I can tell acording to the JPQL
+        // BNF. @See https://en.wikibooks.org/wiki/Java_Persistence/JPQL_BNF
+        // "Encountered "? 1 IN" at character 29, but expected: ["(", "*", "+", "-", "/", ":", "<", "<=", "<>", "=", ">",
+        // ">=", "?", "ABS", "BETWEEN", "CONCAT", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "EXISTS", "INDEX",
+        // "IS", "KEY", "LENGTH", "LIKE", "LOCATE", "LOWER", "MEMBER", "MOD", "NOT", "SIZE", "SQRT", "SUBSTRING", "TRIM",
+        // "TYPE", "UPPER", "VALUE", <BOOLEAN_LITERAL>, <DATE_LITERAL>, <DECIMAL_LITERAL>, <IDENTIFIER>,
+        // <INTEGER_LITERAL>, <TIMESTAMP_LITERAL>, <TIME_LITERAL>]." while parsing JPQL "select i from Item2 i
+        // where ?1   IN  (select KEY(e) from Item2 i, in(i.images) e)  order by i": "Encountered "? 1 IN" at
+        // character 29, but expected: ["(", "*", "+", "-", "/", ":", "<", "<=", "<>", "=", ">", ">=", "?", "ABS",
+        // "BETWEEN", "CONCAT", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "EXISTS", "INDEX", "IS", "KEY",
+        // "LENGTH", "LIKE", "LOCATE", "LOWER", "MEMBER", "MOD", "NOT", "SIZE", "SQRT", "SUBSTRING", "TRIM", "TYPE",
+        // "UPPER", "VALUE", <BOOLEAN_LITERAL>, <DATE_LITERAL>, <DECIMAL_LITERAL>, <IDENTIFIER>, <INTEGER_LITERAL>,
+        // <TIMESTAMP_LITERAL>, <TIME_LITERAL>]." while parsing JPQL "select i from Item2 i where ?1   IN
+        // (select KEY(e) from Item2 i, in(i.images) e)  order by i"
+
         String[] query = {
             "select i from Item1 i" +
-                " where ?1 = any " +
-                " (select KEY(e) from Item1 i, in(i.images) e) " +
+                " where ?1 " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? " = any " : " in ") +
+                    " (select KEY(e) from Item1 i, in(i.images) e) " +
                 " order by i",
             "select i from Item1 i" +
                 " where exists " +
@@ -2624,8 +2656,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
         };
         String[] query2 = {
             "select i from Item2 i" +
-                " where ?1 = any " +
-                " (select KEY(e) from Item2 i, in(i.images) e) " +
+                " where ?1  " +
+                   (getDBDictionary().getSupportsAnyAllSome() ? " = any " : " in ") +
+                    " (select KEY(e) from Item2 i, in(i.images) e) " +
                 " order by i",
             "select i from Item2 i" +
                 " where exists " +
@@ -2635,7 +2668,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
         };
         String[] query3 = {
             "select i from Item3 i" +
-                " where ?1 = any " +
+                " where ?1 " +
+                    (getDBDictionary().getSupportsAnyAllSome() ? " = any " : " IN ") +
                 " (select KEY(e) from Item3 i, in(i.images) e) " +
                 " order by i",
             "select i from Item3 i" +
@@ -2645,15 +2679,23 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 " order by i",
         };
 
+        // Skip these tests if the DB doesn't support AnyAllSome
+        // See comments above. There is a JPQL parse error when using the alternate IN syntax
         for (int i = 0; i < query.length; i++) {
+            // skip test to work around JPQL parsing error
+            if (i == 0 && !getDBDictionary().getSupportsAnyAllSome()) continue;
+
             Query q = em.createQuery(query[i]);
             q.setParameter(1, imageKey1);
             is1 = q.getResultList();
-            for (Item1 item : is1){
+            for (Item1 item : is1) {
                 assertItem1(item);
             }
         }
         for (int i = 0; i < query2.length; i++) {
+            // skip test to work around JPQL parsing error
+            if (i == 0 && !getDBDictionary().getSupportsAnyAllSome()) continue;
+
             Query q = em.createQuery(query2[i]);
             q.setParameter(1, imageKey2);
             is2 = q.getResultList();
@@ -2662,6 +2704,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
             }
         }
         for (int i = 0; i < query3.length; i++) {
+            // skip test to work around JPQL parsing error
+            if (i == 0 && !getDBDictionary().getSupportsAnyAllSome()) continue;
+
             Query q = em.createQuery(query3[i]);
             q.setParameter(1, imageKey3);
             is3 = q.getResultList();
