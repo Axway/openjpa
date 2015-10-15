@@ -87,7 +87,7 @@ public class NuoDBDictionary extends DBDictionary
 //        public boolean fullResultCollectionInOrderByRelation = false;
 //
 //        // sql
-        disableAlterSeqenceIncrementBy=true;
+        // Present in 2.4.1 disableAlterSeqenceIncrementBy=true;
         validationSQL = "SELECT NOW() FROM DUAL";
 //        public String closePoolSQL = null;
 //        public String initializationSQL = null;
@@ -484,15 +484,16 @@ public class NuoDBDictionary extends DBDictionary
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
-        buf.append("LOCATE(");
+        buf.append("(LOCATE(");
         find.appendTo(buf);
         buf.append(", ");
         str.appendTo(buf);
         if (start != null) {
-            buf.append(", ");
+            buf.append(", (");
             start.appendTo(buf);
+            buf.append(" + 1)");
         }
-        buf.append(")");
+        buf.append(") - 1)");
     }
 
     /** NuoDB uses a different syntax to specify that a column is
