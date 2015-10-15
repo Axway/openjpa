@@ -79,14 +79,14 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
                     "openjpa.jdbc.UpdateManager", "constraint",
                     PObject.class,
                     BidirectionalOne2OneOwner.class,
-                    BidirectionalOne2OneOwned.class, CLEAR_TABLES);
+                    BidirectionalOne2OneOwned.class, DROP_TABLES);
             emfWithoutDataCache = createEMF(
                     "openjpa.RuntimeUnenhancedClasses",    "unsupported", 
                     "openjpa.DataCache", "false",
                     "openjpa.jdbc.UpdateManager", "constraint",
                     PObject.class,
                     BidirectionalOne2OneOwned.class,
-                    BidirectionalOne2OneOwner.class, CLEAR_TABLES);
+                    BidirectionalOne2OneOwner.class, DROP_TABLES);
 
             assertNotNull(emfWithDataCache);
             assertNotNull(emfWithoutDataCache);
