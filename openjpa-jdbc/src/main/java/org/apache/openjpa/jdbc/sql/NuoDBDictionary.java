@@ -22,16 +22,19 @@ package org.apache.openjpa.jdbc.sql;
     import org.apache.openjpa.jdbc.identifier.DBIdentifier;
     import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
     import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
-    import org.apache.openjpa.jdbc.schema.Column;
-    import org.apache.openjpa.jdbc.schema.ForeignKey;
+    import org.apache.openjpa.jdbc.schema.*;
     import org.apache.openjpa.jdbc.sql.DBDictionary;
     import org.apache.openjpa.jdbc.sql.SQLBuffer;
     import org.apache.openjpa.kernel.Seq;
     import org.apache.openjpa.lib.identifier.IdentifierRule;
     import org.apache.openjpa.lib.log.Log;
+    import org.apache.openjpa.lib.jdbc.ReportingSQLException;
+    import org.apache.openjpa.util.StoreException;
+    import org.apache.openjpa.util.OpenJPAException;
 
     import java.sql.*;
     import java.util.*;
+    import java.text.MessageFormat;
 
 public class NuoDBDictionary extends DBDictionary
 {
@@ -39,7 +42,6 @@ public class NuoDBDictionary extends DBDictionary
 
     public NuoDBDictionary()
     {
-
         // schema data
         platform = "NuoDB";
 //        public String databaseProductName = "";
@@ -52,9 +54,12 @@ public class NuoDBDictionary extends DBDictionary
 //        public int maxConstraintNameLength = 128;
 //        public int maxIndexNameLength = 128;
 //        public int maxIndexesPerTable = Integer.MAX_VALUE;
+        supportsAnyAllSome = false;
 //        public boolean supportsForeignKeys = true;
+        supportsForeignKeys = /*true;*/ false; // support DDL but not DML
 //        public boolean supportsParameterInSelect = true;
 //        public boolean supportsForeignKeysComposite = true;
+        supportsForeignKeysComposite = /*true*/ false;
 //        public boolean supportsUniqueConstraints = true;
         supportsDeferredConstraints = false;
 //        public boolean supportsRestrictDeleteAction = true;
@@ -68,7 +73,9 @@ public class NuoDBDictionary extends DBDictionary
 //        public boolean supportsDefaultUpdateAction = true;
 //        public boolean supportsAlterTableWithAddColumn = true;
 //        public boolean supportsAlterTableWithDropColumn = true;
+        supportsAlterTableWithDropColumn = false;
 //        public boolean supportsComments = false;
+        supportsComments = true;
 //        public Boolean supportsGetGeneratedKeys = null;
 //        public String reservedWords = null;
 //        public String systemSchemas = null;
@@ -80,8 +87,8 @@ public class NuoDBDictionary extends DBDictionary
 //        public boolean fullResultCollectionInOrderByRelation = false;
 //
 //        // sql
-//        public boolean disableAlterSeqenceIncrementBy=false;
-        validationSQL = "SELECT NOW()";
+        disableAlterSeqenceIncrementBy=true;
+        validationSQL = "SELECT NOW() FROM DUAL";
 //        public String closePoolSQL = null;
 //        public String initializationSQL = null;
 //        public int joinSyntax = SYNTAX_SQL92;
@@ -113,7 +120,7 @@ public class NuoDBDictionary extends DBDictionary
 //        public boolean requiresTargetForDelete = false;
 //        public boolean allowsAliasInBulkClause = true;
 //        public boolean supportsMultipleNontransactionalResultSets = true;
-//        public boolean requiresSearchStringEscapeForLike = false;
+        requiresSearchStringEscapeForLike = true;
 //        public String searchStringEscape = "\\";
 //        public boolean requiresCastForMathFunctions = false;
 //        public boolean requiresCastForComparisons = false;
@@ -125,6 +132,7 @@ public class NuoDBDictionary extends DBDictionary
 //        public boolean supportsSimpleCaseExpression = true;
 //        public boolean supportsGeneralCaseExpression = true;
 //        public boolean useWildCardForCount = false;
+        useWildCardForCount = true;
 //
 //        /**
 //         * Some Databases append whitespace after the schema name
@@ -146,7 +154,7 @@ public class NuoDBDictionary extends DBDictionary
 //        public String currentDateFunction = "CURRENT_DATE";
 //        public String currentTimeFunction = "CURRENT_TIME";
 //        public String currentTimestampFunction = "CURRENT_TIMESTAMP";
-//        public String dropTableSQL = "DROP TABLE {0}";
+        dropTableSQL = "DROP TABLE {0} IF EXISTS CASCADE";
 //
 //        // types
 //        public boolean storageLimitationsFatal = false;
@@ -199,7 +207,7 @@ public class NuoDBDictionary extends DBDictionary
 //        public String arrayTypeName = "ARRAY";
 //        public String bigintTypeName = "BIGINT";
 //        public String binaryTypeName = "BINARY";
-        bitTypeName = "SMALLINT";
+        bitTypeName = "BOOLEAN";
 //        public String blobTypeName = "BLOB";
 //        public String booleanTypeName = "BOOLEAN";
         charTypeName = "CHAR";
@@ -224,8 +232,9 @@ public class NuoDBDictionary extends DBDictionary
 //        public String timestampTypeName = "TIMESTAMP";
         tinyintTypeName = "SMALLINT";
 //        public String varbinaryTypeName = "VARBINARY";
+        //varcharTypeName = "STRING"; // String will not limit size of varchar
         varcharTypeName = "VARCHAR";
-       xmlTypeName = "CLOB";
+        xmlTypeName = "CLOB";
 //        public String xmlTypeEncoding = "UTF-8";
 //        public String getStringVal = "";
 //
@@ -244,16 +253,23 @@ public class NuoDBDictionary extends DBDictionary
 //
 //        // auto-increment
 //        public int maxAutoAssignNameLength = 31;
-//        public String autoAssignClause = null;
-//        public String autoAssignTypeName = null;
-//        public boolean supportsAutoAssign = false;
-//        public String lastGeneratedKeyQuery = null;
-//        public String nextSequenceQuery = null;
-//        public String sequenceSQL = null;
-//        public String sequenceSchemaSQL = null;
-//        public String sequenceNameSQL = null;
+        autoAssignClause = "GENERATED BY DEFAULT AS IDENTITY";
+        autoAssignTypeName = "BIGINT";
+        supportsAutoAssign = true;
+        lastGeneratedKeyQuery =   "SELECT LAST_INSERT_ID() FROM DUAL";
+        // NuoDB doesn't support increment by on sequences.
+        // This causes some problems in NativeJDBCSeq that defaults to allocating 50 at a time
+        // Will likely need a custom implementation to deal with the fact that increment by
+        // isn't supported.
+        // Leaving disabled for now
+//        nextSequenceQuery = "SELECT NEXT VALUE FOR {0} FROM DUAL";
+//        nextSequenceQuery = null;
+//        sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA ,SEQUENCENAME AS SEQUENCE_NAME FROM SYSTEM.SEQUENCES";
+//        sequenceSchemaSQL = "SCHEMA = ?";
+//        sequenceNameSQL = "SEQUENCENAME = ?";
 //        // most native sequences can be run inside the business transaction
 //        public int nativeSequenceType= Seq.TYPE_CONTIGUOUS;
+//        nativeSequenceType= Seq.TYPE_DEFAULT;
 //
 //        /**
 //         * This variable was used in 2.1.x and prior releases to indicate that
@@ -322,7 +338,6 @@ public class NuoDBDictionary extends DBDictionary
 //        public int batchLimit = NO_BATCH;
 
         platform = "NuoDB";
-        requiresSearchStringEscapeForLike = false;
         useSetBytesForBlobs = true;
         useGetBytesForBlobs = true;
         useSetStringForClobs = true;
@@ -335,8 +350,9 @@ public class NuoDBDictionary extends DBDictionary
         setTrailingDelimiter(DELIMITER_BACK_TICK);
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(
-                "CHARACTER", "CLOB","CHARACTER LARGE OBJECT","TEXT",
+                "CHARACTER", "CLOB","CHARACTER LARGE OBJECT","TEXT","STRING",
                 "BLOB", "BINARY", "VARBINARY"));
+        fixedSizeTypeNameSet.remove("NUMERIC");
 
         reservedWordSet.addAll(Arrays.asList("ALL", "AS", "BETWEEN", "BITS", "BOTH", "BREAK",
                 "BY", "CALL", "CASCADE", "CASE", "CATCH", "COLLATE", "COLUMN", "CONSTRAINT",
@@ -379,12 +395,13 @@ public class NuoDBDictionary extends DBDictionary
 
         systemSchemaSet.addAll(Arrays.asList("SYSTEM"));
 
-        }
+    }
 
+    /*
         @Override
     public void setByte(PreparedStatement stmnt, int idx, byte val, Column col)
             throws SQLException
-    {
+   {
         stmnt.setInt(idx, (int)val);
     }
 
@@ -393,17 +410,50 @@ public class NuoDBDictionary extends DBDictionary
     {
         return (byte)rs.getInt(column);
     }
+    */
 
     @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
                                      boolean subselect) {
-
-        if (end == 0)
-            end = Long.MAX_VALUE;
-        buf.append(" LIMIT ").append(String.valueOf(start));
-        buf.append(", ").append(String.valueOf(end - start));
+        long len = end-start;
+        if (len <= 0) {
+            len = Long.MAX_VALUE;
+        }
+        buf.append(String.format(" LIMIT %d ",len));
+        if (start != 0) {
+            buf.append(String.format("OFFSET %d ",start));
+        }
     }
 
+
+    // From migrator doc:
+    //  Bit, newSize(0)             BOOLEAN
+    //  Bit, newSize(1)             BOOLEAN
+    //  Integer                     INTEGER
+    //  BigInt                      BIGINT
+    //  Numeric                     NUMERIC( P , S )
+    //  Decimal                     DECIMAL( P , S )
+    //  Real                        REAL
+    //  Float                       FLOAT
+    //  Double                      DOUBLE
+    //  Char                        CHAR( N )
+    //  Varchar                     VARCHAR( N )
+    //  LongVarchar                 VARCHAR( N )
+    //  Date                        DATE
+    //  Time, newScale(0)           TIME
+    //  Time                        TIME( S )
+    //  TimeStamp, newScale(0)      TIMESTAMP
+    //  TimeStamp                   TIMESTAMP( S )
+    //  Binary                      BINARY( N )
+    //  VarBinary                   VARBINARY( N )
+    //  LongVarBinary               VARBINARY( N )
+    //  Null                        NULL
+    //  NCLOB                       NCLOB
+    //  VarChar                     STRING
+    //  SmallInt                    INTEGER
+    //  SmallInt Unsigned           INTEGER
+    //  Int Unsigned                BIGINT
+    //  BigInt Unsigned             NUMERIC( N , 1 )
     @Override
     public int getPreferredType(int type)
     {
@@ -411,11 +461,13 @@ public class NuoDBDictionary extends DBDictionary
 
         switch (type) {
             case Types.BIT:
+                result = Types.BOOLEAN;
+                break;
             case Types.TINYINT:
                 result = Types.SMALLINT;
                 break;
-            case Types.FLOAT:
-                result = Types.DOUBLE;
+            case Types.SMALLINT:
+                result = Types.INTEGER;
                 break;
             case Types.LONGNVARCHAR:
                 result = Types.VARCHAR;
@@ -427,52 +479,200 @@ public class NuoDBDictionary extends DBDictionary
 
         return type;
     }
-    /**
-     * Invoke this database's indexOf function.
-     *
-     * @param buf the SQL buffer to write the indexOf invocation to
-     * @param str a query value representing the target string
-     * @param find a query value representing the search string
-     * @param start a query value representing the start index, or null
-     * to start at the beginning
-     */
+
+    // LOCATE(<string>,<instring>,<startpos>)
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
-                        FilterValue start) {
-
-        buf.append("(POSITION(");   // (POSITION(
-        find.appendTo(buf);         // (POSITION(find
-        buf.append(" IN ");         // (POSITION(find IN
-        if (start != null)
-            substring(buf, str, start, null);
-        else
-            str.appendTo(buf);      // (POSITION(find in str
-        buf.append(")");            // (POSITION(find in str)
+        FilterValue start) {
+        buf.append("LOCATE(");
+        find.appendTo(buf);
+        buf.append(", ");
+        str.appendTo(buf);
         if (start != null) {
-            buf.append(" - 1  + "); // (POSITION(find in str) - 1 +
-            start.appendTo(buf);    // (POSITION(find in str) - 1 + start
+            buf.append(", ");
+            start.appendTo(buf);
         }
-        buf.append(")");            // (POSITION(find in str) - 1 + start)
+        buf.append(")");
     }
 
-    /**
-     * Return a series of SQL statements to drop the given foreign key from
-     * its table. Return an empty array if operation not supported.
-     * Returns <code>ALTER TABLE &lt;table name&gt; DROP CONSTRAINT
-     * &lt;fk name&gt;</code> by default.
+    /** NuoDB uses a different syntax to specify that a column is
+     * unique.  Use  'UNIQUE ( colName )'  to indicate uniqueness w/o creating an index
+     * OpenJPA will create an index later if necessary. The default implementation
+     * provided by DBDictionary is accepted by NuoDB even though it isn't documented but
+     * it creates and index and behaves like 'UNIQUE KEY indexname ( colName)'.
+     * This creates a problem because OpenJPA will attempt to create another index on
+     * colName and NuoDB doesn't like having multiple indexes on the same column.
      */
-    public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
-        if (DBIdentifier.isNull(fk.getIdentifier())) {
-            String[] retVal;
-            DBIdentifier fkName = fk.loadIdentifierFromDB(this,conn);
-            retVal = (fkName == null || fkName.getName() == null) ?  new String[0] :
-                    new String[]{ "ALTER TABLE "
-                            + getFullName(fk.getTable(), false)
-                            + " DROP FOREIGN KEY " + toDBName(fkName) };
-            return retVal;
+    @Override
+    protected String getUniqueConstraintSQL(Unique unq) {
+        StringBuilder buf = new StringBuilder();
+        if (!DBIdentifier.isNull(unq.getIdentifier())) {
+            buf.append("UNIQUE KEY ");
+            buf.append(unq.getIdentifier());
+            buf.append(" (");
+            buf.append(getNamingUtil().appendColumns(unq.getColumns()));
+            buf.append(") ");
         }
-        return new String[]{ "ALTER TABLE "
-                + getFullName(fk.getTable(), false)
-                + " DROP FOREIGN KEY " + toDBName(fk.getIdentifier()) };
+        return buf.toString();
     }
+
+    // ALTER TABLE <tablename> DROP FOREIGN KEY (<col1>,...) REFRENCES <tablename>
+    @Override
+    public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
+
+        StringBuilder dropTable = new StringBuilder();
+        dropTable.append("ALTER TABLE ");
+        dropTable.append(getFullName(fk.getTable(), false));
+        dropTable.append(" DROP FOREIGN KEY (");
+        boolean first = true;
+        for (Column col : fk.getColumns()) {
+            if (!first) {
+                dropTable.append(",");
+            }
+            first = false;
+            dropTable.append(col.getIdentifier().getName());
+        }
+        dropTable.append(") REFERENCES ");
+        dropTable.append(fk.getPrimaryKeyTableIdentifier().getName());
+        return new String[] { dropTable.toString() };
+    }
+
+    // At moment we don't support FK - so have not implemented
+    // This function is not called because supportsForeignKeys = false
+    @Override
+    public String[] getAddForeignKeySQL(ForeignKey fk)
+    {
+        log.warn("getAddForeignKeySQL(ForeignKey fk) not implemented");
+        return new String[0];
+    }
+
+    @Override
+    public String[] getDropPrimaryKeySQL(PrimaryKey pk) {
+        if (DBIdentifier.isNull(pk.getIdentifier()))
+            return new String[0];
+        String _pk = "DROP INDEX \"" + getFullName(pk.getTable(), false) + "\"";
+        return new String[] { _pk };
+    }
+/* TODO NuoDB doesn't support the increment by option.  Likely need to create
+custom implementatino of NativeJDBCSeq to handle this so that increment is always 1 and
+allocate is always 1
+
+    @Override
+    public String[] getDropSequenceSQL(Sequence seq) {
+        // NOT seeing getDropSequenceSQL being called...
+        log.warn("DAB;  getDropSequenceSQL(Sequence seq): ");
+        String [] dropStmt = super.getDropSequenceSQL(seq);
+        for (String stmt : dropStmt) {
+            log.warn("   " + stmt);
+        }
+        return dropStmt;
+    }
+
+    @Override
+    public String[] getCreateSequenceSQL(Sequence seq) {
+        // NuoDB does not support INCREMENT BY
+        seq.setIncrement(0);
+        seq.setAllocate(0);
+        return super.getCreateSequenceSQL(seq);
+    }
+
+    @Override
+    public String getAlterSequenceSQL(Sequence seq) {
+        seq.setIncrement(0);
+        seq.setAllocate(0);
+        return super.getAlterSequenceSQL(seq);
+    }
+
+    @Override
+    protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName),
+                DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
+        StringBuilder buf = new StringBuilder();
+        buf.append(sequenceSQL);
+        if (!DBIdentifier.isNull(schemaName) || !DBIdentifier.isNull(sequenceName))
+            buf.append(" WHERE ");
+        if (!DBIdentifier.isNull(schemaName)) {
+            buf.append(sequenceSchemaSQL);
+            if (!DBIdentifier.isNull(sequenceName))
+                buf.append(" AND ");
+        }
+        if (!DBIdentifier.isNull(sequenceName))
+            buf.append(sequenceNameSQL);
+        return buf.toString();
+    }
+*/
+    @Override
+    public String getTypeName(Column col) {
+        String typeName=super.getTypeName(col);
+        if ("NUMERIC".equals(typeName)) {
+            typeName="NUMBER";
+        }
+        return typeName;
+    }
+
+    @Override
+    public boolean isFatalException(int subtype, SQLException ex) {
+        if (subtype == StoreException.LOCK  && ex.getErrorCode() == -48) {
+            return false;
+        }
+        if (ex.getErrorCode() == 0 && ex.getSQLState() == null)
+            return false;
+        return super.isFatalException(subtype, ex);
+    }
+
+    @Override
+    protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
+        int state = super.matchErrorState(errorStates, ex);
+        if ("HY008".equals(ex.getSQLState())) {
+            if (conf != null && conf.getLockTimeout() != -1) {
+                state = StoreException.LOCK;
+            } else {
+                state = StoreException.QUERY;
+            }
+        }
+        return state;
+    }
+
+    @Override
+    public boolean needsToCreateIndex(Index idx, Table table, Unique[] uniques) {
+        // NuoDB will automatically create a unique index for the
+        // constraint, so don't create another index again
+        PrimaryKey pk = table.getPrimaryKey();
+        if (pk != null && idx.columnsMatch(pk.getColumns()))
+            return false;
+
+        // If there aren't any unqiques, then we need to create the index
+        if (uniques == null || uniques.length == 0) {
+            return true;
+        }
+
+        // If table has constraints on column (a), an explicit index on (a)
+        // will cause duplicate index error from NuoDB
+        Column[] icols = idx.getColumns();
+        boolean isDuplicate = false;
+        for (int i = 0; i < uniques.length; i++) {
+            Column[] ucols = uniques[i].getColumns();
+            // If the have the same number of columns, they could be duplicates
+            if (icols.length == ucols.length) {
+                // now compare columns
+                boolean match = true;
+                for (int j = 0; j < icols.length && match; j++) {
+                    if (!icols[j].getQualifiedPath().equals(ucols[j].getQualifiedPath())) {
+                        match = false;
+                    }
+                }
+                // We have a match, no need to create the index
+                if (match) {
+                    return false;
+                }
+            }
+        }
+        // didn't find a match, need to create the index
+        return true;
+    }
+
 }
