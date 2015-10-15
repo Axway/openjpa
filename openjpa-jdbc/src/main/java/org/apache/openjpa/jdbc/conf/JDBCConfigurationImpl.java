@@ -213,6 +213,7 @@ public class JDBCConfigurationImpl
             "ingres", "org.apache.openjpa.jdbc.sql.IngresDictionary",
             "jdatastore", "org.apache.openjpa.jdbc.sql.JDataStoreDictionary",
             "mysql", "org.apache.openjpa.jdbc.sql.MySQLDictionary",
+            "nuodb", "org.apache.openjpa.jdbc.sql.NuoDBDictionary",
             "oracle", "org.apache.openjpa.jdbc.sql.OracleDictionary",
             "pointbase", "org.apache.openjpa.jdbc.sql.PointbaseDictionary",
             "postgres", "org.apache.openjpa.jdbc.sql.PostgresDictionary",

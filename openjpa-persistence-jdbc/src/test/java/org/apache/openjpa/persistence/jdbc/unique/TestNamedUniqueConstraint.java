@@ -79,7 +79,7 @@ public class TestNamedUniqueConstraint extends SQLListenerTestCase {
     }
 
     private String getUniqueConstraint(String unique) {
-        if (dict instanceof MySQLDictionary) {
+        if (dict instanceof MySQLDictionary ||"NuoDB".equals(dict.platform)) {
             //CREATE TABLE N_UNIQUE_A (aid INTEGER NOT NULL, f1 INTEGER NOT NULL, f2 INTEGER NOT NULL, 
             //f3 INTEGER NOT NULL, f4 INTEGER NOT NULL, f5 INTEGER, f6 INTEGER, PRIMARY KEY (aid), 
             //UNIQUE U_N_UNQU__F1 (f1), 
@@ -98,6 +98,10 @@ public class TestNamedUniqueConstraint extends SQLListenerTestCase {
             tokens.add(st.nextToken());
         }
         tokens1.add(tokens.get(1));
+        if ("NuoDB".equals(dict.platform)) {
+            // UNIQUE KEY  keyname
+            tokens1.add("KEY");
+        }
         tokens1.add(tokens.get(0));
         for (int i = 2; i < tokens.size(); i++) {
             tokens1.add(tokens.get(i));

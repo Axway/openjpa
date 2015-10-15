@@ -413,6 +413,8 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     public void testSubqueryWithAllClause() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL ("
                 + "SELECT m.salary FROM Manager m WHERE m.department ="
                 + " emp.department)";
@@ -447,6 +449,8 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
     
     public void testCorrelatedSubqueryWithJoin() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
                 + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
         
@@ -466,6 +470,8 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
     
     public void testCorrelatedSubqueryWithAllClause() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "SELECT o FROM Order o JOIN o.customer c "
                     + "WHERE 10000 < ALL (SELECT a.balance FROM c.accounts a)";
         

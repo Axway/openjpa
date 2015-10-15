@@ -81,6 +81,10 @@ public abstract class CompanyModelTest
      * should always return all known instances in the database.
      */
     public void testBasicQueries() throws Exception {
+        // An early release of NuoDB 3.0.0 has a bug with specific query
+        // Skip that query if the DB is NuoDB
+        boolean isNuoDB = "NuoDB".equals(getDBDictionary().platform);
+
         for (Class c : impls.values()) {
             for (PropertyDescriptor pd :
                 Introspector.getBeanInfo(c).getPropertyDescriptors()) {
@@ -95,6 +99,12 @@ public abstract class CompanyModelTest
 
                 // execute the individual queries
                 for (String query : queries) {
+                    // Skip test that exposes bug in NuoDB
+                    final String  NUODB_QUERY_TO_SKIP = "x.customer.orders IS NOT EMPTY";
+                    if (isNuoDB && NUODB_QUERY_TO_SKIP.equals(query)) {
+                        System.out.println("Warning: Skip query for NuoDB: " + query);
+                        continue;
+                    }
                     find(c, "where " + query);
                     str.append(str.length() > 0 ? " or " : "").append(query);
                 }

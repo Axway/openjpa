@@ -83,8 +83,10 @@ public class TestSubquery
             " and (select min(o2.amount) from Customer c, in(c.orders) o2)",
         "select o.oid from Customer c, in(c.orders)o where o.amount >" +
             " (select sum(o2.amount) from c.orders o2)",
-        "select o1.oid, c.name from Order o1, Customer c where o1.amount = " +
-            " any(select o2.amount from in(c.orders) o2)",
+        // TODO Origional query used = ANY. Chanded to in for DBs that don't support any, all, some
+        // Perhaps should figure out how to make this query dynmically initialized based on capabilities of the DB
+            "select o1.oid, c.name from Order o1, Customer c where o1.amount " +
+            " in (select o2.amount from in(c.orders) o2)",
         "SELECT p, m "+
             "FROM Publisher p "+
             "LEFT OUTER JOIN p.magazineCollection m "+
@@ -164,34 +166,38 @@ public class TestSubquery
             " where o.customer.cid.id = o2.customer.cid.id)",  
     };
 
+    // TODO Make seperate version for DBs that don't support any, all, some. NuoDB doesn't support these.
+    // Queries have been rewritten to the equivalent using IN, MIN, and MAX.  Might want to have two versions
+    // of these queries.  One that supports any, all, some and one that does not.  If the intent of these tests
+    // are to test sub queries, then maybe the use of any, some, and all is important and this list can stay.
     static String[]  querys2 = new String[] {
             // 0
         "select o1.oid, c.name from Order o1, Customer c" +
-            " where o1.customer.name = " + 
-            " any(select o2.customer.name from in(c.orders) o2)",
+            " where o1.customer.name " +
+            " in (select o2.customer.name from in(c.orders) o2)",
             // 1
         "select o1.oid, c.name from Order o1, Customer c" +
-            " where o1.amount = " +
-            " any(select o2.amount from in(c.orders) o2)",
+            " where o1.amount " +
+            " in (select o2.amount from in(c.orders) o2)",
             // 2
         "select DISTINCT c.name FROM Customer c JOIN c.orders o " +
             "WHERE EXISTS (SELECT o FROM o.lineitems l where l.quantity > 2 ) ",
             // 3
         "select DISTINCT c.name FROM Customer c, IN(c.orders) co " +
-            "WHERE co.amount > ALL " +
-            "(Select o.amount FROM Order o, in(o.lineitems) l WHERE l.quantity > 2)", 
+            "WHERE co.amount >  " +
+            "(Select MAX(o.amount) FROM Order o, in(o.lineitems) l WHERE l.quantity > 2)",
             // 4
         "select distinct c.name FROM Customer C, IN(C.orders) co " +
-            "WHERE co.amount < ALL " +
-            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)", 
+            "WHERE co.amount <  " +
+            "(Select MIN(o.amount) FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)",
             //5
         "select c.name FROM Customer c, IN(c.orders) co " +
-            "WHERE co.amount <= ALL " +
-            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)",
+            "WHERE co.amount <=  " +
+            "(Select MIN(o.amount) FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)",
             // 6
         "select DISTINCT c.name FROM Customer c, IN(c.orders) co " +
-            "WHERE co.amount > ANY " +
-            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity = 2)",
+            "WHERE co.amount >  " +
+            "(Select MIN(o.amount) FROM Order o, IN(o.lineitems) l WHERE l.quantity = 2)",
             // 7
         "select DISTINCT c.name FROM Customer c " +
             "WHERE EXISTS (SELECT o FROM c.orders o where o.amount " +
@@ -204,8 +210,8 @@ public class TestSubquery
             "EXISTS (SELECT c.name From o.customer c WHERE c.name LIKE '%los') ",
             // 10
         "select Distinct c.name FROM Customer c, IN(c.orders) co " +
-            "WHERE co.amount >= SOME" +
-            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity = 2)",
+            "WHERE co.amount >= " +
+            "(Select MIN(o.amount) FROM Order o, IN(o.lineitems) l WHERE l.quantity = 2)",
             // 11
         "select c FROM Customer c WHERE EXISTS" +
             " (SELECT o FROM c.orders o where o.amount > 1000)",
@@ -216,8 +222,8 @@ public class TestSubquery
         "SELECT c FROM Customer c WHERE "
             + "(SELECT COUNT(o) FROM c.orders o) > 10",
             // 14
-        "SELECT o FROM Order o JOIN o.customer c WHERE c.name = "
-            + "SOME (SELECT a.name FROM c.accounts a)",
+        "SELECT o FROM Order o JOIN o.customer c WHERE c.name IN "
+            + " (SELECT a.name FROM c.accounts a)",
 
         };
 
@@ -236,7 +242,7 @@ public class TestSubquery
     public void testSubquery() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
-        
+
         EntityManager em = emf.createEntityManager();
         for (int i = 0; i < querys_jpa20.length; i++) {
             String q = querys_jpa20[i];

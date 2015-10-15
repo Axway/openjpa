@@ -105,6 +105,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     public void setUp() throws Exception {
         super.setUp();
         TEST_COUNT++;
+        setDictionary();
     }
     
     @Override
@@ -113,7 +114,6 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         if (TEST_COUNT >= 123)
             super.tearDown();
     }
-    
     public void testEmbeddableQuery1() {
         String jpql = "select e from EntityA_Coll_String a, in (a.nickNames) e order by a.id";
         CriteriaQuery<String> q = cb.createQuery(String.class);
@@ -907,6 +907,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery72() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
@@ -925,6 +927,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery73() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
@@ -943,6 +947,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery74() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 <= SOME " +
                 " (select e2.intVal2 from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
@@ -961,6 +967,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery75() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) order by e.intVal3";
@@ -978,6 +986,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     public void testEmbeddableQuery76() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ANY (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
@@ -1004,6 +1014,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     public void testEmbeddableQuery77() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ALL (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
@@ -1029,6 +1041,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery78() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 <= SOME " +
                 " (select e.intVal2 from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
@@ -1052,6 +1066,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery79() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 > ALL (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
@@ -1074,6 +1090,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery80() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
                 " from in(a.embeds) e2) order by e.intVal3";
@@ -1096,6 +1114,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery81() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
                 " from a.embeds e2) order by e.intVal3";
@@ -1119,6 +1139,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery82() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2.intVal2 " +
                 " from in(a.embeds) e2) order by e.intVal3";
@@ -1142,6 +1164,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery83() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
                 " from a.embeds e2) order by e.intVal3";
@@ -1309,6 +1333,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery94() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql1 = "select e, a from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e " +
             " where e.intVal1 = SOME (select e2.intVal1 from EntityA_Embed_Coll_Embed a2 " +
             " , in (a2.embed.embeds) e2) order by e";
@@ -1408,8 +1434,10 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.orderBy(cb.asc(d));
         assertEquivalence(q, jpql);
     }
-    
+
     public void testEmbeddableQuery103() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select d from Department1 d where d.deptId < ANY " +
                 " (select KEY(e) from in(d.empMap) e) order by d";
         CriteriaQuery<Department1> q = cb.createQuery(Department1.class);
@@ -1445,6 +1473,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     public void testEmbeddableQuery104() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select d from Department1 d where d.deptId < SOME " +
                 " (select KEY(e) from Department1 d1, in(d1.empMap) e) order by d";
         CriteriaQuery<Department1> q = cb.createQuery(Department1.class);
@@ -1508,6 +1538,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     public void testEmbeddableQuery111() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select i from Item1 i where :image = any(select KEY(e) from i.images e) order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
         Root<Item1> i = q.from(Item1.class);
@@ -1527,6 +1559,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery112() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select i from Item1 i where :image = any (select KEY(e) from Item1 i, in(i.images) e) " +
                 " order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
@@ -1568,6 +1602,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
      
     public void testEmbeddableQuery114() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select i from Item2 i where :image = any (select KEY(e) from Item2 i, in(i.images) e) " +
                 " order by i";
         CriteriaQuery<Item2> q = cb.createQuery(Item2.class);
@@ -1609,6 +1645,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery116() {
+        if (!getDictionary().getSupportsAnyAllSome()) return;
+
         String jpql = "select i from Item3 i where :image = any (select KEY(e) from Item3 i, in(i.images) e) " +
                 "order by i";
         CriteriaQuery<Item3> q = cb.createQuery(Item3.class);
