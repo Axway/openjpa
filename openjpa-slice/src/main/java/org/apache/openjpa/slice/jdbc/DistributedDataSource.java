@@ -118,4 +118,7 @@ public class DistributedDataSource extends DecoratingDataSource implements
     {
     	return null;
     }
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	throw new SQLFeatureNotSupportedException();
+    }
 }
