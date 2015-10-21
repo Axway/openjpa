@@ -34,12 +34,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import junit.framework.TestCase;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.DerbyDictionary;
-import org.apache.openjpa.jdbc.sql.HSQLDictionary;
-import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
-import org.apache.openjpa.jdbc.sql.MySQLDictionary;
-import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.*;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -187,7 +182,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                 cSQL.size());
         }
 
-        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary))
+        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary ||
+            dict instanceof NuoDBDictionary))
             return;
 
         for (int i = 0; i < jSQL.size(); i++) {
