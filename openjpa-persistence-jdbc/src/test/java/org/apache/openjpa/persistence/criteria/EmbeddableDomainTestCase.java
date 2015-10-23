@@ -86,8 +86,10 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
             auditor = new SQLAuditor();
             setEntityManagerFactory(createNamedEMF(getDomainClasses()));
             assertNotNull(getEntityManagerFactory());
-            setDictionary();
         }
+        // emf is a static. The test runner may instantiate different instances of
+        // this class. dict is not static so it must be initialized.
+        if (getDictionary() == null ) setDictionary();
         em = getEntityManagerFactory().createEntityManager();
         cb = getEntityManagerFactory().getCriteriaBuilder();
     }

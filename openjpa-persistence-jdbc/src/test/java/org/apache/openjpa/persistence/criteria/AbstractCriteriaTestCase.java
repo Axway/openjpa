@@ -34,9 +34,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import junit.framework.TestCase;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.DerbyDictionary;
-import org.apache.openjpa.jdbc.sql.HSQLDictionary;
+import org.apache.openjpa.jdbc.sql.*;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
@@ -188,7 +186,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                 cSQL.size());
         }
 
-        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary))
+        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary || dict instanceof NuoDBDictionary))
             return;
 
         for (int i = 0; i < jSQL.size(); i++) {

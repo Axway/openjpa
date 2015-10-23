@@ -105,7 +105,6 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     public void setUp() throws Exception {
         super.setUp();
         TEST_COUNT++;
-        setDictionary();
     }
     
     @Override
@@ -114,6 +113,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         if (TEST_COUNT >= 123)
             super.tearDown();
     }
+
     public void testEmbeddableQuery1() {
         String jpql = "select e from EntityA_Coll_String a, in (a.nickNames) e order by a.id";
         CriteriaQuery<String> q = cb.createQuery(String.class);
