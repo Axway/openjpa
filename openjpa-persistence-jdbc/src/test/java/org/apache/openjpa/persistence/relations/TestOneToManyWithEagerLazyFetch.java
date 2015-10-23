@@ -33,7 +33,7 @@ public class TestOneToManyWithEagerLazyFetch extends SingleEMFTestCase {
     final int TestUtil1xm_TestRow_Id = 100;
 
     public void setUp() {
-        setUp(Util1xmLf.class, Util1xmRt.class);
+        setUp(CLEAR_TABLES,Util1xmLf.class, Util1xmRt.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
