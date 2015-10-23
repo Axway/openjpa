@@ -139,10 +139,11 @@
                 <connection.username>${openjpa.nuodb.username}</connection.username>
                 <connection.password>${openjpa.nuodb.password}</connection.password>
                 <openjpa.jdbc.Schema>TEST</openjpa.jdbc.Schema>
-                <jdbc.DBDictionary> org.apache.openjpa.jdbc.sql.NuoDBDictionary(InitializationSQL=USE TEST)</jdbc.DBDictionary>
-                <!-- DBCP overrides for MySQL testing -->
-                <dbcp.maxIdle>0</dbcp.maxIdle>
-                <dbcp.minIdle>0</dbcp.minIdle>
+                <jdbc.DBDictionary> org.apache.openjpa.jdbc.sql.NuoDBDictionary(InitializationSQL=USE TEST;SET AUTOCOMMIT OFF;)</jdbc.DBDictionary>
+                <!-- DBCP overrides for NuoDB testing -->
+                <dbcp.maxIdle>10</dbcp.maxIdle>
+                <dbcp.minIdle>6</dbcp.minIdle>
+                <dbcp.maxWaitMillis>10000</dbcp.maxWaitMillis>
             </properties>
             <build>
                 <plugins>
