@@ -220,6 +220,7 @@ public class JDBCConfigurationImpl
             "soliddb", "org.apache.openjpa.jdbc.sql.SolidDBDictionary",
             "sqlserver", "org.apache.openjpa.jdbc.sql.SQLServerDictionary",
             "sybase", "org.apache.openjpa.jdbc.sql.SybaseDictionary",
+            "nuodb", "org.apache.openjpa.jdbc.sql.NuoDBDictionary",
             "maxdb", MaxDBDictionary.class.getCanonicalName(),
         };
         dbdictionaryPlugin.setAliases(aliases);

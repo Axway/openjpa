@@ -180,9 +180,11 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
      * for certain combinations of configurations.
      */
     void assertPhysicalForeignKeyCreation() {
+		JDBCConfiguration _conf = (JDBCConfiguration) emf.getConfiguration();
+
         String regex = "ALTER TABLE .* ADD FOREIGN KEY \\(PARENT_ID\\) "
                      + "REFERENCES Parent \\(id\\)(\\sDEFERRABLE)?";
-        if (getMappingDefaults().contains("restrict")) {
+        if (getMappingDefaults().contains("restrict") &&  _conf.getDBDictionaryInstance().supportsForeignKeys) {
             assertSQL(regex);
         } else {
             assertNotSQL(regex);

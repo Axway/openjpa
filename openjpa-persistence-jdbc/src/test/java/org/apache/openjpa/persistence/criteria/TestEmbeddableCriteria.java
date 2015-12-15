@@ -105,6 +105,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     public void setUp() throws Exception {
         super.setUp();
         TEST_COUNT++;
+        setDictionary();
     }
     
     @Override
