@@ -40,7 +40,7 @@
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
-    <version>2.1.1-AXWAY-3</version>
+    <version>2.1.1-NUODB-3</version>
 
     <properties>
         <openjpa.version>${project.version}</openjpa.version>
@@ -76,9 +76,11 @@
         <hsqldb.version>1.8.0.10</hsqldb.version>
         <mysql.version>5.1.12</mysql.version>
         <postgresql.version>8.4-701.jdbc3</postgresql.version>
-        <nuodb.version>3.0.0</nuodb.version>
-        <openjpa.nuodb.url>jdbc:com.nuodb://linux122.lab.phx.axway.int:48004/openjpa</openjpa.nuodb.url>
+        <nuodb.version>2.4.0</nuodb.version>
+        <openjpa.nuodb.url>jdbc:com.nuodb://localhost:48004/openjpa2?schema=test&amp;isolation=read_committed</openjpa.nuodb.url>
         <openjpa.nuodb.schema>test</openjpa.nuodb.schema>
+        <openjpa.nuodb.username>dba</openjpa.nuodb.username>
+        <openjpa.nuodb.password>dba</openjpa.nuodb.password>
 
         <!-- other common versions -->
         <slf4jVersion>1.6.1</slf4jVersion>
