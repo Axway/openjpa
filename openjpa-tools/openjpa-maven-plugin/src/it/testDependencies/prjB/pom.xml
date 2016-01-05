@@ -33,17 +33,17 @@
         </dependency>
 
         <dependency>
-            <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+            <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
             <version>@pom.version@</version>
         </dependency>
         <dependency>
-            <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+            <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-jdbc</artifactId>
             <version>@pom.version@</version>
         </dependency>
         <dependency>
-            <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+            <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
             <version>@pom.version@</version>
         </dependency>
@@ -64,7 +64,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+                <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
                 <version>@pom.version@</version>
                 <executions>
