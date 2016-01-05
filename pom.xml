@@ -40,7 +40,7 @@
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
-    <version>2.1.1-AXWAY-4-SNAPSHOT</version>
+    <version>2.1.1-AXWAY-SNAPSHOT</version>
 
     <properties>
         <openjpa.version>${project.version}</openjpa.version>
@@ -139,9 +139,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/Axway/openjpa.git</connection>
-        <developerConnection>scm:git:https://github.com/Axway/openjpa.git</developerConnection>
-        <url>https://github.com/Axway/openjpa.git</url>
+        <connection>scm:git:git@github.com:Axway/openjpa.git</connection>
+        <developerConnection>scm:git:git@github.com:Axway/openjpa.git</developerConnection>
+        <url>https://anonymous@github.com/Axway/openjpa.git</url>
     </scm>
 
     <modules>
