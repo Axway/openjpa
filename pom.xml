@@ -30,7 +30,7 @@
       <relativePath />
     </parent>
 
-    <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
@@ -687,25 +687,25 @@
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>2.3.1</version>
                 </plugin>
-                <!--<plugin>-->
-                    <!--<groupId>org.codehaus.mojo</groupId>-->
-                    <!--<artifactId>buildnumber-maven-plugin</artifactId>-->
-                    <!--<version>1.0-beta-4</version>-->
-                    <!--<configuration>-->
-                        <!--<getRevisionOnlyOnce>true</getRevisionOnlyOnce>-->
-                        <!--<revisionOnScmFailure>offline</revisionOnScmFailure>-->
-                        <!--<useLastCommittedRevision>true</useLastCommittedRevision>-->
-                        <!--<timestampFormat>{0,date,long} at {0,time,short}</timestampFormat>-->
-                    <!--</configuration>-->
-                    <!--<executions>-->
-                        <!--<execution>-->
-                            <!--<phase>validate</phase>-->
-                            <!--<goals>-->
-                                <!--<goal>create</goal>-->
-                            <!--</goals>-->
-                        <!--</execution>-->
-                    <!--</executions>-->
-                <!--</plugin>-->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.1</version>
+                    <configuration>
+                        <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                        <revisionOnScmFailure>offline</revisionOnScmFailure>
+                        <useLastCommittedRevision>true</useLastCommittedRevision>
+                        <timestampFormat>{0,date,long} at {0,time,short}</timestampFormat>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>create</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>

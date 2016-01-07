@@ -25,12 +25,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+        <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
         <version>2.1.1-AXWAY-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-persistence-locking</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Persistence Locking Tests</name>
@@ -731,12 +731,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+            <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+            <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -774,7 +774,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.axway.interchange.thirdparty.org.apache.openjpa</groupId>
+                                    <groupId>org.apache.openjpa</groupId>
                                     <artifactId>openjpa-persistence-jdbc</artifactId>
                                     <version>${project.version}</version>
                                     <type>test-jar</type>
