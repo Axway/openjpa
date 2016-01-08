@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -27,7 +27,7 @@
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
       <version>7</version>
-      <relativePath />
+      <relativePath/>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -40,7 +40,7 @@
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
-    <version>2.1.1-AXWAY-SNAPSHOT</version>
+    <version>2.1.1-AXWAY-4</version>
 
     <properties>
         <openjpa.version>${project.version}</openjpa.version>
@@ -141,8 +141,9 @@
     <scm>
         <connection>scm:git:git@github.com:Axway/openjpa.git</connection>
         <developerConnection>scm:git:git@github.com:Axway/openjpa.git</developerConnection>
-        <url>https://anonymous@github.com/Axway/openjpa.git</url>
-    </scm>
+        <url>git@github.com:Axway/openjpa.git</url>
+    <tag>2.1.1-AXWAY-4</tag>
+</scm>
 
     <modules>
         <module>openjpa-lib</module>
@@ -334,7 +335,7 @@
                        <configuration>
                            <argLine>${surefire.jvm.args}</argLine>
                            <includes>
-                               <include />
+                               <include/>
                            </includes>
                        </configuration>
                    </plugin>
@@ -366,8 +367,8 @@
             <properties>
                 <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
                 <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
-                <connection.username />
-                <connection.password />
+                <connection.username/>
+                <connection.password/>
             </properties>
         </profile>
 
@@ -394,8 +395,8 @@
             <properties>
                 <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
                 <connection.url>jdbc:derby:memory:openjpa-derby-inmem-database;create=true</connection.url>
-                <connection.username />
-                <connection.password />
+                <connection.username/>
+                <connection.password/>
             </properties>
         </profile>
 
